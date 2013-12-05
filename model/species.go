@@ -1,7 +1,7 @@
 package model
 
 import (
-  "errors"
+	"errors"
 	"github.com/eaigner/hood"
 )
 
@@ -12,14 +12,14 @@ type Species struct {
 }
 
 func LoadSpecies(db *hood.Hood, dex string, id string) (Species, error) {
-  if dex == "national" {
-    var queryResults []Species
-    db.Where("dex_number", "=", id).Limit(1).Find(&queryResults)
-    if len(queryResults) >= 1 {
-      return queryResults[0], nil
-    } else {
-      return Species{}, errors.New("Not Found")
-    }
-  }
-  return Species{}, errors.New("NYI")
+	if dex == "national" {
+		var queryResults []Species
+		db.Where("dex_number", "=", id).Limit(1).Find(&queryResults)
+		if len(queryResults) >= 1 {
+			return queryResults[0], nil
+		} else {
+			return Species{}, errors.New("Not Found")
+		}
+	}
+	return Species{}, errors.New("NYI")
 }

@@ -2,11 +2,9 @@ package main
 
 import (
 	ctrl "./controller"
+  "code.google.com/p/gorest"
 	"encoding/json"
-  "errors"
-	"fmt"
 	"github.com/eaigner/hood"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -25,7 +23,7 @@ func main() {
 	db = openDatabase(config["development"]["driver"], config["development"]["source"])
 
 	// Load our handlers
-	gorest.RegisterService(ctrl.SpeciesController{database: db})
+	gorest.RegisterService(&ctrl.SpeciesService{Database: db})
   http.Handle("/", gorest.Handle())
 
 	// Start the server
