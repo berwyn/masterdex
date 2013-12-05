@@ -1,11 +1,14 @@
 package main
 
 import (
+	ctrl "./controller"
 	"encoding/json"
+  "errors"
+	"fmt"
 	"github.com/eaigner/hood"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
-	_ "model"
 	"net/http"
 	"os"
 )
@@ -17,13 +20,13 @@ const (
 var db *hood.Hood
 
 func main() {
-
 	// First, load our DB config
 	config := loadDbConfig()
 	db = openDatabase(config["development"]["driver"], config["development"]["source"])
 
 	// Load our handlers
-	http.HandleFunc("/dex/pokemon/", SpeciesHandler)
+	gorest.RegisterService(ctrl.SpeciesController{database: db})
+  http.Handle("/", gorest.Handle())
 
 	// Start the server
 	debugLog("Booting server on " + port)
@@ -63,15 +66,4 @@ func openDatabase(driver string, connectionString string) (database *hood.Hood) 
 		os.Exit(1)
 	}
 	return database
-}
-
-func makeHandler(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
-	return func(res http.ResponseWriter, req *http.Request) {
-		// TODO Serve 404s and whatnot
-		fn(res, req)
-	}
-}
-
-func SpeciesHandler(res http.ResponseWriter, req *http.Request) {
-
 }
