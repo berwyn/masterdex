@@ -1,0 +1,14 @@
+{
+  "development": {
+    "driver": "postgres",
+    "source": "user=pokedev password=pokedev host=localhost port=5432 dbname=pokedev sslmode=disable"
+  },
+  "production": {
+    "driver": "",
+    "source": ""
+  },
+  "test": {
+    "driver": "",
+    "source": ""
+  }
+}
