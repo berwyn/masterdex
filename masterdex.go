@@ -1,6 +1,7 @@
 package main
 
 import (
+	. "./controller"
 	. "./middleware"
 	. "./model"
 	"encoding/json"
@@ -24,7 +25,7 @@ func main() {
 	db = openDatabase(config["development"]["driver"], config["development"]["source"])
 
 	// Load our handlers
-	http.Handle("/pokemon/", NewResponseTypeHandler("pokemon", loadPokemon))
+	http.Handle("/pokemon/", NewResponseTypeHandler(SpeciesController{}, "pokemon"))
 
 	// Start the server
 	debugLog("Booting server on " + port)

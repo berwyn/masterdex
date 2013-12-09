@@ -1,23 +1,20 @@
 package middleware
 
 import (
-	// "encoding/json"
-	"fmt"
 	html "html/template"
-	// "log"
+	"log"
 	"net/http"
-	// "path"
+	. "reflect"
 	"regexp"
+	"strings"
 )
 
 type ResponseTypeHandler struct {
-	create       func(string) *ResponseTypeHandlerError
-	read         func(string) (interface{}, *ResponseTypeHandlerError)
-	update       func(string) *ResponseTypeHandlerError
-	del          func(string) *ResponseTypeHandlerError
-	descriptions map[string]string
-	templateName string
-	template     *html.Template
+	controller     interface{}
+	methodMap      map[string]Method
+	descriptionMap map[string]string
+	templateName   string
+	template       *html.Template
 }
 
 type ResponseTypeHandlerError struct {
@@ -25,19 +22,23 @@ type ResponseTypeHandlerError struct {
 	ErrorMessage string
 }
 
-func NewResponseTypeHandler(
-	create func(string) *ResponseTypeHandlerError,
-	read func(string) (interface{}, *ResponseTypeHandlerError),
-	update func(string) *ResponseTypeHandlerError,
-	del func(string) *ResponseTypeHandlerError,
-	tmpl string,
-	descriptor map[string]string,
-) *ResponseTypeHandler {
-	return &ResponseTypeHandler{
-		read:         read,
+func NewResponseTypeHandler(controller interface{}, tmpl string) *ResponseTypeHandler {
+	h := ResponseTypeHandler{
+		controller:   controller,
 		templateName: tmpl,
 		template:     html.Must(html.ParseFiles("views/" + tmpl + ".html")),
 	}
+	t := TypeOf(controller)
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		tag := field.Tag.Get("restr")
+		if tag != "" {
+			parts := strings.Split(tag, ",")
+			h.methodMap[parts[0]] = t.MethodByName(strings.Title(field.Name))
+			h.descriptionMap[parts[0]] = parts[1]
+		}
+	}
+	return &h
 }
 
 func (h *ResponseTypeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -54,46 +55,8 @@ func (h *ResponseTypeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	if match, _ := regexp.MatchString("OPTIONS", r.Method); match {
 		if !useJson {
 			http.Redirect(w, r, r.URL.Path, http.StatusTemporaryRedirect)
-		} else {
-			body := "{"
-			if h.descriptions != nil {
-				for k, v := range h.descriptions {
-					body += fmt.Sprintf("\"%s\":{\"description\":\"%s\"}", k, v)
-				}
-			}
-			body += "}"
-			fmt.Fprintf(w, "%s", body)
 		}
 
 		return
 	}
-
-	// if useJson {
-	// 	w.Header().Add("Content-Type", "application/json")
-	// 	log.Println("[DEBUG] Serving JSON for template " + h.templateName)
-	// } else {
-	// 	w.Header().Add("Content-Type", "text/html")
-	// 	log.Println("[DEBUG] Serving HTML for template " + h.templateName)
-	// }
-
-	// if err != nil {
-	// 	w.WriteHeader(err.ErrorCode)
-	// 	if useJson {
-	// 		fmt.Fprintf(w, "{error_code:%d, error_message:%s}", err.ErrorCode, err.ErrorMessage)
-	// 	} else {
-	// 		http.Redirect(w, r, fmt.Sprintf("/static/%d.http", err.ErrorCode), err.ErrorCode)
-	// 	}
-	// 	return
-	// }
-
-	// if useJson {
-	// 	b, err := json.Marshal(entity)
-	// 	if err == nil {
-	// 		fmt.Fprintf(w, "%s", b)
-	// 	} else {
-	// 		fmt.Fprintf(w, "{error_code:%s, error_message:%s}", http.StatusInternalServerError, "Something went wrong")
-	// 	}
-	// } else {
-	// 	h.template.Execute(w, entity)
-	// }
 }
