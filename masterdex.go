@@ -1,9 +1,10 @@
 package main
 
 import (
-	ctrl "./controller"
-  "code.google.com/p/gorest"
+	. "./middleware"
+	. "./model"
 	"encoding/json"
+	"fmt"
 	"github.com/eaigner/hood"
 	"io/ioutil"
 	"log"
@@ -23,8 +24,7 @@ func main() {
 	db = openDatabase(config["development"]["driver"], config["development"]["source"])
 
 	// Load our handlers
-	gorest.RegisterService(&ctrl.SpeciesService{Database: db})
-  http.Handle("/", gorest.Handle())
+	http.Handle("/pokemon/", NewResponseTypeHandler("pokemon", loadPokemon))
 
 	// Start the server
 	debugLog("Booting server on " + port)
@@ -64,4 +64,26 @@ func openDatabase(driver string, connectionString string) (database *hood.Hood) 
 		os.Exit(1)
 	}
 	return database
+}
+
+func loadPokemon(id string) (interface{}, *ResponseTypeHandlerError) {
+	var queryResults []Species
+	err := db.Where("dex_number", "=", id).Limit(1).Find(&queryResults)
+	if err != nil {
+		errLog(fmt.Sprintf("Loading pokemon %s failed", id))
+		return Species{}, &ResponseTypeHandlerError{
+			ErrorCode:    http.StatusInternalServerError,
+			ErrorMessage: "Something went wrong",
+		}
+	} else {
+		if len(queryResults) > 0 {
+			return queryResults[0], nil
+		} else {
+			warnLog(fmt.Sprintf("Query for id %s had no results", id))
+			return Species{}, &ResponseTypeHandlerError{
+				ErrorCode:    http.StatusNotFound,
+				ErrorMessage: "Couldn't find that pokemon",
+			}
+		}
+	}
 }
