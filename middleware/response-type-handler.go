@@ -5,9 +5,10 @@ import (
 	html "html/template"
 	"net/http"
 	. "reflect"
-	"regexp"
 	"strings"
 )
+
+const tagName = "rest"
 
 type ResponseTypeHandler struct {
 	controller   interface{}
@@ -27,21 +28,26 @@ func NewResponseTypeHandler(controller interface{}, tmpl string) *ResponseTypeHa
 		templateName: tmpl,
 		template:     html.Must(html.ParseFiles("views/" + tmpl + ".html")),
 	}
-	t := TypeOf(controller)
+	h.mapFieldsToMethods()
+	return &h
+}
+
+func (handler *ResponseTypeHandler) mapFieldsToMethods() {
+	t := TypeOf(handler.controller)
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		tag := field.Tag.Get("restr")
 		if tag != "" {
-			parts := strings.Split(tag, ",")
-			method, found := t.MethodByName(strings.Title(field.Name))
+			methodName := strings.Title(field.Name)
+			method, found := t.MethodByName(methodName)
 			if !found {
-				panic(fmt.Sprintf("Couldn't find the method %s on the type %s", strings.Title(field.Name), t.Name()))
+				panic(fmt.Sprintf("Couldn't find the method %s on the type %s", methodName, t.Name()))
 			}
-			h.methodMap[parts[0]] = method
+			handler.methodMap[tag] = method
 		}
 	}
-	return &h
 }
 
-func (h *ResponseTypeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (handler *ResponseTypeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
 }
