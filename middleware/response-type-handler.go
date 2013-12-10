@@ -1,11 +1,14 @@
 package middleware
 
 import (
+	"encoding/json"
 	"fmt"
 	html "html/template"
 	"log"
 	"net/http"
+	"path"
 	. "reflect"
+	"regexp"
 	"strings"
 )
 
@@ -19,6 +22,7 @@ type ResponseTypeHandler struct {
 }
 
 type ResponseTypeHandlerError struct {
+	error
 	ErrorCode    int
 	ErrorMessage string
 }
@@ -56,11 +60,30 @@ func (handler ResponseTypeHandler) mapFieldsToMethods() {
 	}
 }
 
+func (handler ResponseTypeHandler) checkAccept(acceptString string) bool {
+	matched, _ := regexp.MatchString("application/json|text/json", acceptString)
+	return matched
+}
+
 func (handler ResponseTypeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Println(fmt.Sprintf("%s - %s", r.Method, r.URL.Path))
 	if _, exists := handler.methodMap[r.Method]; exists {
-		returns := handler.methodMap[r.Method].Func.Call([]Value{handler.controller, r.URL.Path})
-		log.Println(fmt.Sprintf("%s", returns))
+		values := handler.methodMap[r.Method].Func.Call([]Value{ValueOf(handler.controller), ValueOf(path.Base(r.URL.Path))})
+		for i := 0; i < len(values); i++ {
+			log.Println(fmt.Sprintf("%d: %s - %s", i, values[i], values[i].Interface()))
+		}
+		useJson := handler.checkAccept(r.Header.Get("Accept"))
+		if useJson {
+			body, err := json.Marshal(values[0].Interface())
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, `{"error":"Internal server error"}`)
+				return
+			}
+			fmt.Fprintf(w, "%s", body)
+		} else {
+
+		}
 	} else {
 		log.Println(fmt.Sprintf("%s not found in %s", r.Method, handler.methodMap))
 		// TODO Handle unsupported methods
