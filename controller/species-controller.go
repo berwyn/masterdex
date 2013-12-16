@@ -50,6 +50,7 @@ func (ctrl SpeciesController) Create(r render.Render, w http.ResponseWriter, req
 	err := tx.Commit()
 
 	if err != nil {
+		tx.Rollback()
 		r.Error(422)
 		return
 	}
