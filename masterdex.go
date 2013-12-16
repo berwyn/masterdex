@@ -1,15 +1,14 @@
 package main
 
 import (
-	. "./controller"
 	"encoding/json"
+	"fmt"
+	. "github.com/berwyn/masterdex/controller"
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
 )
 
 const (
@@ -40,27 +39,25 @@ func main() {
 }
 
 func debugLog(message string) {
-	log.Println("[DEBUG]", message)
+	fmt.Println("[masterdex][DEBUG]", message)
 }
 
 func warnLog(message string) {
-	log.Println("[WARN]", message)
+	fmt.Println("[masterdex][WARN]", message)
 }
 
 func errLog(message string) {
-	log.Println("[ERROR]", message)
+	fmt.Println("[masterdex][ERROR]", message)
 }
 
 func loadDbConfig() (config map[string]map[string]string) {
 	file, err := ioutil.ReadFile("db/config.json")
 	if err != nil {
-		log.Fatal("Couldn't open database config")
-		os.Exit(1)
+		panic("Couldn't open database config")
 	}
 
 	if err = json.Unmarshal(file, &config); err != nil {
-		log.Fatal("Couldn't deserialise database config")
-		os.Exit(1)
+		panic("Couldn't deserialise database config")
 	}
 	return config
 }
@@ -68,8 +65,7 @@ func loadDbConfig() (config map[string]map[string]string) {
 func openDatabase(driver string, connectionString string) (database *hood.Hood) {
 	database, err := hood.Open(driver, connectionString)
 	if err != nil {
-		log.Fatal("Couldn't connect to database")
-		os.Exit(1)
+		panic("Couldn't connect to database")
 	}
 	return database
 }

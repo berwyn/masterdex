@@ -1,9 +1,10 @@
 package controller
 
 import (
-	. "../model"
 	"encoding/json"
+	"errors"
 	"fmt"
+	. "github.com/berwyn/masterdex/model"
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
@@ -25,19 +26,39 @@ func (ctrl SpeciesController) Register(server *martini.ClassicMartini) {
 	server.Options("/pokemon", ctrl.Metadata)
 }
 
-func (ctrl SpeciesController) Create(r render.Render, req *http.Request, logger *log.Logger) {
-	logger.Println("Got to POST /pokemon")
+func (ctrl SpeciesController) Create(r render.Render, w http.ResponseWriter, req *http.Request, logger *log.Logger) {
 	hasJson := req.Header.Get("Content-Type") == "application/json"
+	var payload Species
 	if hasJson {
-		var body map[string]string
 		data, readErr := ioutil.ReadAll(req.Body)
-		jsonErr := json.Unmarshal(data, &body)
-		fmt.Println(fmt.Sprintf("Body: %s\nError: %s\nRead error: %s", body, jsonErr, readErr))
-		r.JSON(http.StatusCreated, new(interface{}))
+		jsonErr := json.Unmarshal(data, &payload)
+		if jsonErr != nil || readErr != nil {
+			r.Error(http.StatusInternalServerError)
+			return
+		}
 	} else {
-		req.ParseForm()
-		fmt.Println(fmt.Sprintf("Form Body: %s", req.Form))
-		r.HTML(http.StatusCreated, "species", new(interface{}))
+		r.Error(http.StatusTeapot)
+	}
+
+	if ctrl.exists("national", payload.DexNumber) {
+		r.Error(http.StatusConflict)
+		return
+	}
+
+	tx := ctrl.Database.Begin()
+	tx.Save(&payload)
+	err := tx.Commit()
+
+	if err != nil {
+		r.Error(422)
+		return
+	}
+
+	useJson := req.Header.Get("Accept") == "application/json"
+	if useJson {
+		r.JSON(http.StatusCreated, payload)
+	} else {
+		http.Redirect(w, req, fmt.Sprintf("/pokemon/national/%d", payload.DexNumber), http.StatusMovedPermanently)
 	}
 }
 
@@ -70,4 +91,26 @@ func (ctrl SpeciesController) Metadata(r render.Render) {
 	options := make(map[string]string)
 	options["test"] = "test"
 	r.JSON(http.StatusOK, options)
+}
+
+func (ctrl SpeciesController) exists(dex string, id int) bool {
+	var result []Species
+	if dex == "national" {
+		ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&result)
+		return len(result) > 0
+	} else {
+		return false
+	}
+}
+
+func (ctrl SpeciesController) loadOne(dex string, id int) (*Species, error) {
+	var result []Species
+	if dex == "national" {
+		err := ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&result)
+		if err != nil {
+			return &result[0], nil
+		}
+		return nil, err
+	}
+	return nil, errors.New("NYI")
 }
