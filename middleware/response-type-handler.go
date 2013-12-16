@@ -40,21 +40,20 @@ func NewResponseTypeHandler(controller interface{}, tmpl string) *ResponseTypeHa
 
 func (handler ResponseTypeHandler) mapFieldsToMethods() {
 	t := TypeOf(handler.controller)
-	log.Println(fmt.Sprintf("%s - :%d @%d", t.Name(), t.NumField(), t.NumMethod()))
+	log.Println(fmt.Sprintf("[DEBUG] %s - :%d @%d", t.Name(), t.NumField(), t.NumMethod()))
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		tag := field.Tag.Get(tagName)
-		log.Println(fmt.Sprintf("Processing %s:%s with tag %s", t.Name(), field.Name, tag))
 		if tag != "" {
 			methodName := strings.Title(field.Name)
 			method, found := t.MethodByName(methodName)
 			if !found {
 				for j := 0; j < t.NumMethod(); j++ {
-					log.Println(fmt.Sprintf("%s#%s", t.Name(), t.Method(j).Name))
+					log.Println(fmt.Sprintf("[ERROR] %s#%s", t.Name(), t.Method(j).Name))
 				}
-				panic(fmt.Sprintf("Couldn't find the method %s on the type %s", methodName, t.Name()))
+				panic(fmt.Sprintf("[ERROR] Couldn't find the method %s on the type %s", methodName, t.Name()))
 			}
-			log.Println(fmt.Sprintf("Mapping %s#%s to %s", t.Name(), methodName, tag))
+			log.Println(fmt.Sprintf("[DEBUG] \t#%s -> %s", methodName, tag))
 			handler.methodMap[tag] = method
 		}
 	}
@@ -68,7 +67,8 @@ func (handler ResponseTypeHandler) checkAccept(acceptString string) bool {
 func (handler ResponseTypeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Println(fmt.Sprintf("%s - %s", r.Method, r.URL.Path))
 	if _, exists := handler.methodMap[r.Method]; exists {
-		values := handler.methodMap[r.Method].Func.Call([]Value{ValueOf(handler.controller), ValueOf(path.Base(r.URL.Path))})
+		args := []Value{ValueOf(handler.controller), ValueOf(path.Base(r.URL.Path))}
+		values := handler.methodMap[r.Method].Func.Call(args)
 		for i := 0; i < len(values); i++ {
 			log.Println(fmt.Sprintf("%d: %s - %s", i, values[i], values[i].Interface()))
 		}

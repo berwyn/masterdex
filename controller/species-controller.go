@@ -2,33 +2,48 @@ package controller
 
 import (
 	. "../model"
-	"errors"
-	"fmt"
+	"github.com/codegangsta/martini"
+	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
-	"log"
+	"net/http"
 )
 
 type SpeciesController struct {
 	Database *hood.Hood
-	create   interface{} `rest:"POST"`
-	read     interface{} `rest:"GET"`
-	update   interface{} `rest:"PUT"`
 }
 
-func (ctrl SpeciesController) Create(id string) (interface{}, error) {
-	return nil, nil
+func (ctrl SpeciesController) Register(server *martini.ClassicMartini) {
+	server.Get("/pokemon/:dex/:id", ctrl.Read)
+	server.Post("/pokemon/", ctrl.Create)
+	server.Patch("/pokemon/:dex/:id", ctrl.Update)
+	server.Delete("/pokemon/:dex/:id", ctrl.Delete)
 }
 
-func (ctrl SpeciesController) Read(id string) (interface{}, error) {
+func (ctrl SpeciesController) Create() {
+
+}
+
+func (ctrl SpeciesController) Read(params martini.Params, r render.Render, req *http.Request) {
+	useJson := req.Header.Get("Accept") == "application/json"
 	var results []Species
-	err := ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&results)
-	if err != nil {
-		// TODO Send a real error up
-		return Species{}, errors.New("Database error")
+	if params["dex"] == "national" {
+		err := ctrl.Database.Where("dex_number", "=", params["id"]).Limit(1).Find(&results)
+		if err == nil {
+			if useJson {
+				r.JSON(200, results[0])
+			} else {
+				r.HTML(200, "species", results[0])
+			}
+		} else {
+			r.Error(500)
+		}
 	}
-	return results[0], nil
 }
 
-func (ctrl SpeciesController) Update(id string) (interface{}, error) {
-	return nil, nil
+func (ctrl SpeciesController) Update(params martini.Params) {
+
+}
+
+func (ctrl SpeciesController) Delete() {
+
 }

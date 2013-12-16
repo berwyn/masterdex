@@ -2,10 +2,9 @@ package main
 
 import (
 	. "./controller"
-	. "./middleware"
-	. "./model"
 	"encoding/json"
-	"fmt"
+	"github.com/codegangsta/martini"
+	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
 	"io/ioutil"
 	"log"
@@ -25,7 +24,20 @@ func main() {
 	db = openDatabase(config["development"]["driver"], config["development"]["source"])
 
 	// Load our handlers
-	http.Handle("/pokemon/", NewResponseTypeHandler(SpeciesController{Database: db}, "pokemon"))
+	m := martini.Classic()
+	m.Use(render.Renderer(render.Options{
+		Layout:     "layout",
+		Directory:  "views",
+		Extensions: []string{".html"},
+	}))
+	controllers := []Controller{
+		SpeciesController{Database: db},
+    RootController{}
+	}
+	for _, ctrl := range controllers {
+		ctrl.Register(m)
+	}
+	http.Handle("/", m)
 
 	// Start the server
 	debugLog("Booting server on " + port)
