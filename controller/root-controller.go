@@ -7,7 +7,7 @@ import (
 
 type RootController struct{}
 
-func Register(server *martini.ClassicMartini) {
+func (ctrl RootController) Register(server *martini.ClassicMartini) {
 	server.Get("/", func(r render.Render) {
 		r.HTML(200, "root", nil)
 	})

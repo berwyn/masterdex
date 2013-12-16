@@ -17,26 +17,21 @@ const (
 )
 
 var db *hood.Hood
+var controllers []Controller
 
 func main() {
 	// First, load our DB config
 	config := loadDbConfig()
 	db = openDatabase(config["development"]["driver"], config["development"]["source"])
 
-	// Load our handlers
-	m := martini.Classic()
-	m.Use(render.Renderer(render.Options{
-		Layout:     "layout",
-		Directory:  "views",
-		Extensions: []string{".html"},
-	}))
-	controllers := []Controller{
+	// Populate the controller slice
+	controllers = []Controller{
 		SpeciesController{Database: db},
-    RootController{}
+		RootController{},
 	}
-	for _, ctrl := range controllers {
-		ctrl.Register(m)
-	}
+
+	// Load our handlers
+	m := configureMartini()
 	http.Handle("/", m)
 
 	// Start the server
@@ -77,4 +72,17 @@ func openDatabase(driver string, connectionString string) (database *hood.Hood) 
 		os.Exit(1)
 	}
 	return database
+}
+
+func configureMartini() *martini.ClassicMartini {
+	m := martini.Classic()
+	m.Use(render.Renderer(render.Options{
+		Layout:     "layout",
+		Directory:  "views",
+		Extensions: []string{".html"},
+	}))
+	for _, ctrl := range controllers {
+		ctrl.Register(m)
+	}
+	return m
 }
