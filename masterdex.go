@@ -7,6 +7,7 @@ import (
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 )
@@ -72,10 +73,12 @@ func openDatabase(driver string, connectionString string) (database *hood.Hood) 
 
 func configureMartini() *martini.ClassicMartini {
 	m := martini.Classic()
+	helpers := []template.FuncMap{}
 	m.Use(render.Renderer(render.Options{
 		Layout:     "layout",
 		Directory:  "views",
 		Extensions: []string{".html"},
+		Funcs:      helpers,
 	}))
 	for _, ctrl := range controllers {
 		ctrl.Register(m)
