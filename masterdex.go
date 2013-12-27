@@ -7,7 +7,6 @@ import (
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
-	"github.com/shaoshing/train"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -74,11 +73,7 @@ func openDatabase(driver string, connectionString string) (database *hood.Hood) 
 
 func configureMartini() *martini.ClassicMartini {
 	m := martini.Classic()
-	helpers := template.FuncMap{
-		"javascript_tag":            train.JavascriptTag,
-		"stylesheet_tag":            train.StylesheetTag,
-		"stylesheet_tag_with_param": train.StylesheetTagWithParam,
-	}
+	helpers := []template.FuncMap{}
 	m.Use(render.Renderer(render.Options{
 		Layout:     "layout",
 		Directory:  "views",
