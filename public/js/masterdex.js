@@ -1,10 +1,3 @@
-window.onload = function() {
-  pokeball = document.getElementById('pokeball');
-  if(window.location.pathname === "/") {
-    $('body').addClass('home');
-  }
-};
-
 var masterdex = angular.module('masterdex', ['ngRoute']);
 
 masterdex.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
@@ -26,6 +19,18 @@ masterdex.config(['$routeProvider', '$locationProvider', function($routeProvider
       templateUrl: 'about.html',
       controller: 'AboutCtrl'
     });
+}]);
+
+masterdex.controller('AppCtrl', ['$scope', '$location', function($scope, $location) {
+  $scope.$watch(function() {
+    return $location.path();
+  }, function(path) {
+    if(path === '/') {
+      $('body').addClass('home');
+    } else {
+      $('body').removeClass('home');
+    }
+  });
 }]);
 
 masterdex.controller('RootCtrl', ['$scope', function($scope) {
