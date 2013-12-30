@@ -1,10 +1,3 @@
-var pokeball,
-    start,
-    animation,
-    step,
-    load,
-    loadDone;
-
 window.onload = function() {
   pokeball = document.getElementById('pokeball');
   if(window.location.pathname === "/") {
@@ -12,20 +5,41 @@ window.onload = function() {
   }
 };
 
-step = function(timestamp) {
-  var delta = timestamp - start,
-      deg = (360 * (delta/1000)) % 360;
-  pokeball.style.transform = "rotate("+deg+"deg)";
-  pokeball.style.mozTransform = "rotate("+deg+"deg)";
-  pokeball.style.webkitTransform = "rotate("+deg+"deg)";
-  animation = requestAnimationFrame(step);
-}
+var masterdex = angular.module('masterdex', ['ngRoute']);
 
-load = function() {
-  start = new Date();
-  step(start);
-}
+masterdex.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+  $locationProvider.html5Mode(true);
+  $routeProvider
+    .when('/', {
+      templateUrl: 'root.html',
+      controller: 'RootCtrl'
+    })
+    .when('/pokemon', {
+      templateUrl: 'pokemon.html',
+      controller: 'PkmnCtrl'
+    })
+    .when('/item', {
+      templateUrl: 'item.html',
+      controller: 'ItemCtrl'
+    })
+    .when('/about', {
+      templateUrl: 'about.html',
+      controller: 'AboutCtrl'
+    });
+}]);
 
-loadDone = function() {
-  cancelAnimationFrame(animation);
-}
+masterdex.controller('RootCtrl', ['$scope', function($scope) {
+
+}]);
+
+masterdex.controller('PkmnCtrl', ['$scope', function($scope) {
+
+}]);
+
+masterdex.controller('ItemCtrl', ['$scope', function($scope) {
+
+}]);
+
+masterdex.controller('AboutControl', ['$scope', function($scope) {
+
+}]);

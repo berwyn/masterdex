@@ -76,6 +76,7 @@ func openDatabase(driver string, connectionString string) (database *hood.Hood) 
 func configureMartini() *martini.ClassicMartini {
 	m := martini.Classic()
 	helpers := []template.FuncMap{}
+	m.Use(martini.Static("views"))
 	m.Use(render.Renderer(render.Options{
 		Layout:     "layout",
 		Directory:  "views",
