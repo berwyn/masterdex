@@ -8,7 +8,7 @@ var pokeball,
 window.onload = function() {
   pokeball = document.getElementById('pokeball');
   if(window.location.pathname === "/") {
-    $('footer').addClass('home-footer');
+    $('body').addClass('home');
   }
 };
 

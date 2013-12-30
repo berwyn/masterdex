@@ -69,8 +69,7 @@ footer span {
   height: 100%;
 }
 
-.content-home {
-  height: 100%;
+body.home {
   color: #fff;
   background-color: #CF1423;
 }
@@ -94,9 +93,4 @@ footer span {
   margin: 20px 5px 20px 0px;
   padding: 18px 24px;
   font-size: 21px;
-}
-
-footer.home-footer {
-  color: #fff;
-  background-color: #CF1423;
 }
