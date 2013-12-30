@@ -1,3 +1,22 @@
 body {
   padding-top: 50px;
 }
+
+.navbar-masterdex {
+  color: #fff;
+  height: 50px;
+  background-color: #CF1423;
+}
+
+.navbar-masterdex a {
+  color: #fff;
+}
+
+.navbar-masterdex .navbar-brand {
+  padding: 0px;
+}
+
+.navbar-masterdex .pokeball-header {
+  height: 100px;
+  margin-top: -25px;
+}
