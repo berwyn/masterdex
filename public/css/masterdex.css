@@ -19,7 +19,7 @@ footer span {
   background-size: contain;
   height: 800px;
   width: 600px;
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   z-index: -10;
@@ -37,9 +37,16 @@ footer span {
 }
 
 .header {
+  position: relative;
   color: #fff;
   background-color: #CF1423;
   padding: 30px 15px 40px;
+  overflow: hidden;
+}
+
+.header .braixen {
+  z-index: 0;
+  /*margin-top: -160px;*/
 }
 
 .navbar-masterdex {
@@ -79,6 +86,10 @@ footer span {
 body.home {
   color: #fff;
   background-color: #CF1423;
+}
+
+.content-home {
+  position: relative;
 }
 
 .content-home div:first-child {
