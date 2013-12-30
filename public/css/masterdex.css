@@ -4,13 +4,24 @@ body {
 
 footer {
   font-size: .8em;
-  padding-top: 40px;
-  padding-bottom: 15px;
+  padding-top: 20px;
+  padding-bottom: 10px;
 }
 
 footer span {
   display: block;
   text-align: center;
+}
+
+.braixen {
+  background-image: url('/img/braixen.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 800px;
+  width: 600px;
+  position: fixed;
+  top: 0;
+  right: 0;
 }
 
 .btn-outline-inverse {
@@ -49,7 +60,7 @@ footer span {
   width: 100px;
   height: 100px;
   margin-top: -25px;
-  background-size: cover;
+  background-size: contain  ;
   background-repeat: no-repeat;
   background-image: url('/img/pokeball.svg');
 }
