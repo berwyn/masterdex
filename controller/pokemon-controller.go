@@ -13,11 +13,20 @@ import (
 	"net/http"
 )
 
-type SpeciesController struct {
+type PokemonController struct {
 	Database *hood.Hood
 }
 
-func (ctrl SpeciesController) Register(server *martini.ClassicMartini) {
+func hasJson(req *http.Request) bool {
+	return req.Header.Get("Content-Type") == "application/json"
+}
+
+func useJson(req *http.Request) bool {
+	return req.Header.Get("Accept") == "application/json"
+}
+
+func (ctrl PokemonController) Register(server *martini.ClassicMartini) {
+	server.Get("/pokemon", ctrl.Index)
 	server.Get("/pokemon/:dex/:id", ctrl.Read)
 	server.Post("/pokemon", ctrl.Create)
 	server.Put("/pokemon/:dex/:id", ctrl.Update)
@@ -26,10 +35,17 @@ func (ctrl SpeciesController) Register(server *martini.ClassicMartini) {
 	server.Options("/pokemon", ctrl.Metadata)
 }
 
-func (ctrl SpeciesController) Create(r render.Render, w http.ResponseWriter, req *http.Request, logger *log.Logger) {
-	hasJson := req.Header.Get("Content-Type") == "application/json"
+func (ctrl PokemonController) Index(r render.Render, req *http.Request) {
+	if useJson(req) {
+		r.Error(http.StatusTeapot)
+	} else {
+		r.HTML(200, "pokemon", nil)
+	}
+}
+
+func (ctrl PokemonController) Create(r render.Render, w http.ResponseWriter, req *http.Request, logger *log.Logger) {
 	var payload Species
-	if hasJson {
+	if hasJson(req) {
 		data, readErr := ioutil.ReadAll(req.Body)
 		jsonErr := json.Unmarshal(data, &payload)
 		if jsonErr != nil || readErr != nil {
@@ -55,15 +71,14 @@ func (ctrl SpeciesController) Create(r render.Render, w http.ResponseWriter, req
 		return
 	}
 
-	useJson := req.Header.Get("Accept") == "application/json"
-	if useJson {
+	if useJson(req) {
 		r.JSON(http.StatusCreated, payload)
 	} else {
 		http.Redirect(w, req, fmt.Sprintf("/pokemon/national/%d", payload.DexNumber), http.StatusMovedPermanently)
 	}
 }
 
-func (ctrl SpeciesController) Read(params martini.Params, r render.Render, req *http.Request) {
+func (ctrl PokemonController) Read(params martini.Params, r render.Render, req *http.Request) {
 	useJson := req.Header.Get("Accept") == "application/json"
 	var results []Species
 	if params["dex"] == "national" {
@@ -80,21 +95,21 @@ func (ctrl SpeciesController) Read(params martini.Params, r render.Render, req *
 	}
 }
 
-func (ctrl SpeciesController) Update(params martini.Params) {
+func (ctrl PokemonController) Update(params martini.Params) {
 
 }
 
-func (ctrl SpeciesController) Delete() {
+func (ctrl PokemonController) Delete() {
 
 }
 
-func (ctrl SpeciesController) Metadata(r render.Render) {
+func (ctrl PokemonController) Metadata(r render.Render) {
 	options := make(map[string]string)
 	options["test"] = "test"
 	r.JSON(http.StatusOK, options)
 }
 
-func (ctrl SpeciesController) exists(dex string, id int) bool {
+func (ctrl PokemonController) exists(dex string, id int) bool {
 	var result []Species
 	if dex == "national" {
 		ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&result)
@@ -104,7 +119,7 @@ func (ctrl SpeciesController) exists(dex string, id int) bool {
 	}
 }
 
-func (ctrl SpeciesController) loadOne(dex string, id int) (*Species, error) {
+func (ctrl PokemonController) loadOne(dex string, id int) (*Species, error) {
 	var result []Species
 	if dex == "national" {
 		err := ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&result)

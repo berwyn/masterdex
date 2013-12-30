@@ -26,7 +26,7 @@ func main() {
 
 	// Populate the controller slice
 	controllers = []Controller{
-		SpeciesController{Database: db},
+		PokemonController{Database: db},
 		RootController{},
 	}
 
