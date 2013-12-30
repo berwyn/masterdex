@@ -17,14 +17,6 @@ type PokemonController struct {
 	Database *hood.Hood
 }
 
-func hasJson(req *http.Request) bool {
-	return req.Header.Get("Content-Type") == "application/json"
-}
-
-func useJson(req *http.Request) bool {
-	return req.Header.Get("Accept") == "application/json"
-}
-
 func (ctrl PokemonController) Register(server *martini.ClassicMartini) {
 	server.Get("/pokemon", ctrl.Index)
 	server.Get("/pokemon/:dex/:id", ctrl.Read)
@@ -39,7 +31,7 @@ func (ctrl PokemonController) Index(r render.Render, req *http.Request) {
 	if useJson(req) {
 		r.Error(http.StatusTeapot)
 	} else {
-		r.HTML(200, "pokemon", nil)
+		r.HTML(http.StatusOK, "pokemon", nil)
 	}
 }
 
