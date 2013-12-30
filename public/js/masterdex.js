@@ -45,6 +45,6 @@ masterdex.controller('ItemCtrl', ['$scope', function($scope) {
 
 }]);
 
-masterdex.controller('AboutControl', ['$scope', function($scope) {
+masterdex.controller('AboutCtrl', ['$scope', function($scope) {
 
 }]);
