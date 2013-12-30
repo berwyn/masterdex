@@ -11,9 +11,10 @@
 </head>
 <body>
   {{template "header" .}}
-  <div class="container">
+  <main class="content" role="main">
     {{yield}}
-  </div>
+  </main>
+  {{template "footer" .}}
   <script src="/js/masterdex.js"></script>
 </body>
 </html>

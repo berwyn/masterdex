@@ -1,22 +1,24 @@
-<nav class="navbar navbar-masterdex navbar-fixed-top" role="navigation">
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#masterdex-nav">
-      <span class="sr-only">Toggle Naviation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <div class="navbar-brand">
-      <img id="pokeball" src="/img/pokeball.svg" alt="Masterdex" class="pokeball-header" />
+<header class="navbar navbar-masterdex navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#masterdex-nav">
+        <span class="sr-only">Toggle Naviation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <div id="pokeball" class="pokeball-header"></div>
+      </div>
+    </div>
+
+    <div class="collapse navbar-collapse" id="masterdex-nav">
+      <ul class="nav navbar-nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/pokemon">Pokedex</a></li>
+        <li><a href="/item">Itemdex</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
     </div>
   </div>
-
-  <div class="collapse navbar-collapse" id="masterdex-nav">
-    <ul class="nav navbar-nav">
-      <li><a href="/">Home</a></li>
-      <li><a href="/pokemon">Pokedex</a></li>
-      <li><a href="/item">Itemdex</a></li>
-      <li><a href="/about">About</a></li>
-    </ul>
-  </div>
-</nav>
+</header>
