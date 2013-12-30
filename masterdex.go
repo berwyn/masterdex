@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 const (
@@ -37,8 +38,9 @@ func main() {
 	http.Handle("/", m)
 
 	// Start the server
-	debugLog("Booting server on " + port)
-	http.ListenAndServe(port, nil)
+	p := getPort()
+	debugLog("Booting server on " + p)
+	http.ListenAndServe(p, nil)
 }
 
 func debugLog(message string) {
@@ -51,6 +53,14 @@ func warnLog(message string) {
 
 func errLog(message string) {
 	fmt.Println("[masterdex][ERROR]", message)
+}
+
+func getPort() string {
+	osPort := os.Getenv("PORT")
+	if osPort != "" {
+		return ":" + osPort
+	}
+	return port
 }
 
 func loadDbConfig() (config map[string]map[string]string) {
