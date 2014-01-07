@@ -8,17 +8,25 @@ $red: #CF1423
 *
   font-family: 'Roboto', sans-serif !important
 
+html,
+body
+  min-width: 515px
+  height: 100%
+
 body
   padding-top: 50px
 
-  &.home
+  &[data-controller="home"],
+  &[data-controller="home"] > footer
     color: #fff
     background-color: $red
 
 footer
+  height: 80px
+  margin-top: -80px
   font-size: .8em
-  padding-top: 20px
-  padding-bottom: 10px
+  // padding-top: 20px
+  // padding-bottom: 10px
 
   span
     display: block
@@ -32,7 +40,7 @@ footer
   width: 600px
   position: absolute
   top: 0
-  right: 0
+  right: -130px
   z-index: -10
 
 .btn-outline-inverse
@@ -52,7 +60,7 @@ footer
   overflow: hidden
 
   .braixen
-    z-index: 0
+    z-index: inherit
     margin-top: -160px
 
 .navbar-masterdex
@@ -80,7 +88,9 @@ footer
     background-image: url('/img/pokeball.svg')
 
 .content
-  height: 100%
+  overflow: hidden
+  min-height: 100%
+  padding-bottom: 80px
 
 .content-home
   position: relative

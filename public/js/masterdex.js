@@ -3,30 +3,13 @@
 
   masterdex = angular.module('masterdex', ['ngRoute']);
 
-  masterdex.config([
-    '$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
-      $locationProvider.html5Mode(true);
-      return $routeProvider.when('/', {
-        templateUrl: 'root.html',
-        controller: 'RootCtrl'
-      }).when('/pokemon', {
-        templateUrl: 'pokemon.html',
-        controller: 'PkmnCtrl'
-      }).when('/item', {
-        templateUrl: 'item.html',
-        controller: 'ItemCtrl'
-      }).when('/about', {
-        templateUrl: 'about.html',
-        $controller: 'AboutCtrl'
-      });
-    }
-  ]);
+  masterdex.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {}]);
 
   masterdex.controller('AppCtrl', [
     '$scope', '$location', function($scope, $location) {
       return $scope.$watch(function() {
         return $location.path();
-      }, function() {
+      }, function(path) {
         if (path === '/') {
           return $('body').addClass('home');
         } else {

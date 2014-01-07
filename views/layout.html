@@ -12,9 +12,9 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-route.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-resource.min.js"></script>
 </head>
-<body ng-controller="AppCtrl">
+<body ng-controller="AppCtrl" {{if .cssClass}} data-controller="{{.cssClass}}" {{end}}>
   {{template "header" .}}
-  <main class="content" role="main" ng-view>
+  <main class="content" role="main">
     {{yield}}
   </main>
   {{template "footer" .}}

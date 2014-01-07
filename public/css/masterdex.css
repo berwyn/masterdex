@@ -1,18 +1,20 @@
 * { font-family: "Roboto", sans-serif !important; }
 
-body { padding-top: 50px; }
-body.home { color: white; background-color: #cf1423; }
+html, body { min-width: 515px; height: 100%; }
 
-footer { font-size: 0.8em; padding-top: 20px; padding-bottom: 10px; }
+body { padding-top: 50px; }
+body[data-controller="home"], body[data-controller="home"] > footer { color: white; background-color: #cf1423; }
+
+footer { height: 80px; margin-top: -80px; font-size: 0.8em; }
 footer span { display: block; text-align: center; }
 
-.braixen { background-image: url("/img/braixen.png"); background-repeat: no-repeat; background-size: contain; height: 800px; width: 600px; position: absolute; top: 0; right: 0; z-index: -10; }
+.braixen { background-image: url("/img/braixen.png"); background-repeat: no-repeat; background-size: contain; height: 800px; width: 600px; position: absolute; top: 0; right: -130px; z-index: -10; }
 
 .btn-outline-inverse { color: white; background-color: transparent; border-color: white; }
 .btn-outline-inverse:hover { color: #cf1423; background-color: white; }
 
 .header { position: relative; color: white; background-color: #cf1423; padding: 30px 15px 40px; overflow: hidden; }
-.header .braixen { z-index: 0; margin-top: -160px; }
+.header .braixen { z-index: inherit; margin-top: -160px; }
 
 .navbar-masterdex { color: white; height: 50px; background-color: #cf1423; border-color: #b3121f; -webkit-box-shadow: 0 1px 0 solid rgba(255, 255, 255, 0.1); -moz-box-shadow: 0 1px 0 solid rgba(255, 255, 255, 0.1); box-shadow: 0 1px 0 solid rgba(255, 255, 255, 0.1); }
 .navbar-masterdex a { color: white; }
@@ -20,7 +22,7 @@ footer span { display: block; text-align: center; }
 .navbar-masterdex .navbar-brand { padding: 0px; }
 .navbar-masterdex .pokeball-header { width: 100px; height: 100px; margin-top: -25px; background-size: contain; background-repeat: no-repeat; background-image: url("/img/pokeball.svg"); }
 
-.content { height: 100%; }
+.content { overflow: hidden; min-height: 100%; padding-bottom: 80px; }
 
 .content-home { position: relative; }
 .content-home div:first-child { padding-top: 140px; padding-bottom: 140px; }

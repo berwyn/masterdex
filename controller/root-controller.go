@@ -9,6 +9,6 @@ type RootController struct{}
 
 func (ctrl RootController) Register(server *martini.ClassicMartini) {
 	server.Get("/", func(r render.Render) {
-		r.HTML(200, "root", nil)
+		r.HTML(200, "root", map[string]interface{}{"cssClass": "home"})
 	})
 }
