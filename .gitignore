@@ -23,3 +23,7 @@ _testmain.go
 
 # Grunt
 node_modules/
+.sass-cache
+.bundle
+*.css.map
+*.js.map

@@ -1,0 +1,31 @@
+* { font-family: "Roboto", sans-serif !important; }
+
+body { padding-top: 50px; }
+body.home { color: white; background-color: #cf1423; }
+
+footer { font-size: 0.8em; padding-top: 20px; padding-bottom: 10px; }
+footer span { display: block; text-align: center; }
+
+.braixen { background-image: url("/img/braixen.png"); background-repeat: no-repeat; background-size: contain; height: 800px; width: 600px; position: absolute; top: 0; right: 0; z-index: -10; }
+
+.btn-outline-inverse { color: white; background-color: transparent; border-color: white; }
+.btn-outline-inverse:hover { color: #cf1423; background-color: white; }
+
+.header { position: relative; color: white; background-color: #cf1423; padding: 30px 15px 40px; overflow: hidden; }
+.header .braixen { z-index: 0; margin-top: -160px; }
+
+.navbar-masterdex { color: white; height: 50px; background-color: #cf1423; border-color: #b3121f; -webkit-box-shadow: 0 1px 0 solid rgba(255, 255, 255, 0.1); -moz-box-shadow: 0 1px 0 solid rgba(255, 255, 255, 0.1); box-shadow: 0 1px 0 solid rgba(255, 255, 255, 0.1); }
+.navbar-masterdex a { color: white; }
+.navbar-masterdex a:hover { color: #cf1423; }
+.navbar-masterdex .navbar-brand { padding: 0px; }
+.navbar-masterdex .pokeball-header { width: 100px; height: 100px; margin-top: -25px; background-size: contain; background-repeat: no-repeat; background-image: url("/img/pokeball.svg"); }
+
+.content { height: 100%; }
+
+.content-home { position: relative; }
+.content-home div:first-child { padding-top: 140px; padding-bottom: 140px; }
+.content-home .masthead { font-size: 100px; }
+.content-home .lead { font-size: 30px; margin-right: 25%; }
+.content-home .btn-outline-inverse { width: auto; margin: 20px 5px 20px 0px; padding: 18px 24px; font-size: 21px; }
+
+/*# sourceMappingURL=masterdex.css.map */

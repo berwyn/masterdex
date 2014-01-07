@@ -1,4 +1,9 @@
-$red = #CF1423
+$red: #CF1423
+
+@mixin box-shadow($top, $left, $blur, $color, $inset:"")
+  -webkit-box-shadow: $top $left $blur $color #{$inset}
+  -moz-box-shadow: $top $left $blur $color #{$inset}
+  box-shadow: $top $left $blur $color #{$inset}
 
 *
   font-family: 'Roboto', sans-serif !important
@@ -47,15 +52,15 @@ footer
   overflow: hidden
 
   .braixen
-      z-index: 0
-      margin-top: -160px
+    z-index: 0
+    margin-top: -160px
 
 .navbar-masterdex
   color: #fff
   height: 50px
   background-color: $red
   border-color: #B3121F
-  @include box-shadow(0 1px 0 solid rgba(255, 255, 255, .1))
+  @include box-shadow(0, 1px, 0, solid, rgba(255, 255, 255, .1))
 
   a
     color: #fff
