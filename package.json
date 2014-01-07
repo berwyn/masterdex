@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "grunt-contrib-coffee": "~0.8.0",
+    "load-grunt-tasks": "~0.2.1",
+    "grunt-contrib-sass": "~0.6.0"
+  }
+}
