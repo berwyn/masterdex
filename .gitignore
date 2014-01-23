@@ -27,3 +27,5 @@ node_modules/
 .bundle
 *.css.map
 *.js.map
+public/css/
+public/js/
