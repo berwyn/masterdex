@@ -35,3 +35,5 @@ module.exports = (grunt) ->
         tasks: ['sass']
 
   grunt.registerTask 'default', ['coffee', 'sass', 'watch']
+  grunt.registerTask 'compile', ['coffee', 'sass']
+  grunt.registerTask 'heroku', ['coffee', 'sass']
