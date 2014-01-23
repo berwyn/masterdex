@@ -16,12 +16,15 @@ module.exports = (grunt) ->
           'public/js/masterdex.js': ['assets/scripts/masterdex.coffee']
 
     sass:
-      dist:
+      compile:
         options:
-          sourcemap: true
-          style: 'compact'
-        files:
-          'public/css/masterdex.css': 'assets/stylesheets/masterdex.sass'
+          sourceComments: 'map'
+          sourceMap: 'source.css.map'
+        cwd: 'assets/stylesheets'
+        src: '*.scss'
+        dest: 'public/css'
+        expand: true
+        ext: '.css'
 
     watch:
       scripts:
