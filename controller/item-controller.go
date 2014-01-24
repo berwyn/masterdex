@@ -16,7 +16,7 @@ func (ctrl ItemController) Register(server *martini.ClassicMartini) {
 }
 
 func (ctrl ItemController) Index(r render.Render, req *http.Request) {
-	if useJson(req) {
+	if useJSON(req) {
 		r.Error(http.StatusTeapot)
 	} else {
 		r.HTML(http.StatusOK, "item", nil)

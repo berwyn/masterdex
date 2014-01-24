@@ -1,9 +1,10 @@
-package main
+package masterdex
 
 import (
+	. "github.com/berwyn/masterdex/controller"
+
 	"encoding/json"
 	"fmt"
-	. "github.com/berwyn/masterdex/controller"
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
@@ -44,15 +45,15 @@ func main() {
 }
 
 func debugLog(message string) {
-	fmt.Println("[masterdex][DEBUG]", message)
+	fmt.Println("[masterdex] [DEBUG]", message)
 }
 
 func warnLog(message string) {
-	fmt.Println("[masterdex][WARN]", message)
+	fmt.Println("[masterdex] [WARN]", message)
 }
 
 func errLog(message string) {
-	fmt.Println("[masterdex][ERROR]", message)
+	fmt.Println("[masterdex] [ERROR]", message)
 }
 
 func getPort() string {

@@ -19,10 +19,10 @@ module.exports = (grunt) ->
       compile:
         options:
           sourceComments: 'map'
-          sourceMap: 'source.css.map'
+          sourceMap: 'public/css'
         cwd: 'assets/stylesheets'
         src: '*.scss'
-        dest: 'public/css'
+        dest: 'assets/stylesheets'
         expand: true
         ext: '.css'
 
