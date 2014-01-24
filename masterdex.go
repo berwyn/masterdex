@@ -1,4 +1,4 @@
-package masterdex
+package main
 
 import (
 	. "github.com/berwyn/masterdex/controller"
@@ -93,6 +93,16 @@ func configureMartini() *martini.ClassicMartini {
 		Extensions: []string{".html"},
 		Funcs:      helpers,
 	}))
+	m.Use(func(c martini.Context, request *http.Request, r render.Render) {
+		body := &Request{}
+		c.Map(body)
+		c.Next()
+		if UseJSON(request) {
+			r.JSON(body.Status, body.Data)
+		} else {
+			r.HTML(body.Status, body.Template, body.Data)
+		}
+	})
 	for _, ctrl := range controllers {
 		ctrl.Register(m)
 	}

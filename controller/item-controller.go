@@ -2,9 +2,7 @@ package controller
 
 import (
 	"github.com/codegangsta/martini"
-	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
-	"net/http"
 )
 
 type ItemController struct {
@@ -15,10 +13,8 @@ func (ctrl ItemController) Register(server *martini.ClassicMartini) {
 	server.Get("/item", ctrl.Index)
 }
 
-func (ctrl ItemController) Index(r render.Render, req *http.Request) {
-	if useJSON(req) {
-		r.Error(http.StatusTeapot)
-	} else {
-		r.HTML(http.StatusOK, "item", nil)
-	}
+func (ctrl ItemController) Index(request *Request) {
+	request.Data = new(struct{})
+	request.Status = 200
+	request.Template = "item"
 }

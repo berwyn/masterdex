@@ -9,10 +9,16 @@ type Controller interface {
 	Register(*martini.ClassicMartini)
 }
 
-func hasJSON(req *http.Request) bool {
+type Request struct {
+	Data     interface{}
+	Status   int
+	Template string `json:"-"`
+}
+
+func HasJSON(req *http.Request) bool {
 	return req.Header.Get("Content-Type") == "application/json"
 }
 
-func useJSON(req *http.Request) bool {
+func UseJSON(req *http.Request) bool {
 	return req.Header.Get("Accept") == "application/json"
 }
