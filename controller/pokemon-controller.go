@@ -1,20 +1,32 @@
 package controller
 
 import (
-	// "encoding/json"
-	"errors"
-	// "fmt"
+	"fmt"
 	. "github.com/berwyn/masterdex/model"
 	"github.com/codegangsta/martini"
-	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
-	// "io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
+)
+
+const (
+	ERROR_BAD_ID           = -1
+	ERROR_BAD_REGION       = -2
+	ERROR_ID_NOT_IN_REGION = -3
 )
 
 type PokemonController struct {
 	Database *hood.Hood
+}
+
+type PokemonNotFoundError struct {
+	id int
+}
+
+func (err PokemonNotFoundError) Error() string {
+	return fmt.Sprintf("Could not find the pokemon with ID %d", err.id)
 }
 
 func (ctrl PokemonController) Register(server *martini.ClassicMartini) {
@@ -27,62 +39,42 @@ func (ctrl PokemonController) Register(server *martini.ClassicMartini) {
 	server.Options("/pokemon", ctrl.Metadata)
 }
 
-func (ctrl PokemonController) Index(r render.Render, req *http.Request, response *Request) {
-	response.Status = 200
-	response.Data = new(struct{})
-	response.Template = "pokemon"
+func (ctrl PokemonController) Index(response *Request) {
+	if response.UsingJSON {
+		ctrl.Metadata(response)
+	} else {
+		response.Status = 200
+		response.Data = new(struct{})
+		response.Template = "pokemon"
+	}
 }
 
-func (ctrl PokemonController) Create(r render.Render, w http.ResponseWriter, req *http.Request, logger *log.Logger) {
-	// var payload Species
-	// if hasJSON(req) {
-	// 	data, readErr := ioutil.ReadAll(req.Body)
-	// 	jsonErr := json.Unmarshal(data, &payload)
-	// 	if jsonErr != nil || readErr != nil {
-	// 		r.Error(http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// } else {
-	// 	r.Error(http.StatusTeapot)
-	// }
-
-	// if ctrl.exists("national", payload.DexNumber) {
-	// 	r.Error(http.StatusConflict)
-	// 	return
-	// }
-
-	// tx := ctrl.Database.Begin()
-	// tx.Save(&payload)
-	// err := tx.Commit()
-
-	// if err != nil {
-	// 	tx.Rollback()
-	// 	r.Error(422)
-	// 	return
-	// }
-
-	// if useJSON(req) {
-	// 	r.JSON(http.StatusCreated, payload)
-	// } else {
-	// 	http.Redirect(w, req, fmt.Sprintf("/pokemon/national/%d", payload.DexNumber), http.StatusMovedPermanently)
-	// }
+func (ctrl PokemonController) Create(response *Request, logger *log.Logger) {
 }
 
-func (ctrl PokemonController) Read(params martini.Params, r render.Render, req *http.Request) {
-	// useJSON := req.Header.Get("Accept") == "application/json"
-	// var results []Species
-	// if params["dex"] == "national" {
-	// 	err := ctrl.Database.Where("dex_number", "=", params["id"]).Limit(1).Find(&results)
-	// 	if err == nil {
-	// 		if useJSON {
-	// 			r.JSON(http.StatusOK, results[0])
-	// 		} else {
-	// 			r.HTML(http.StatusOK, "species", results[0])
-	// 		}
-	// 	} else {
-	// 		r.Error(500)
-	// 	}
-	// }
+func (ctrl PokemonController) Read(params martini.Params, response *Request) {
+	id := regionalIDToNational(params["region"], params["id"])
+	switch id {
+	case ERROR_BAD_ID:
+		response.Error(http.StatusBadRequest, fmt.Sprintf(`'%s' is not a valid ID for a pokemon`, params["id"]))
+	case ERROR_BAD_REGION:
+		response.Error(http.StatusBadRequest, fmt.Sprintf(`'%s' is not a valid region`, params["region"]))
+	case ERROR_ID_NOT_IN_REGION:
+		response.Error(http.StatusBadRequest, fmt.Sprintf(`The %s region doesn't have a pokemon with ID %s`, strings.ToUpper(params["region"]), params["id"]))
+	default:
+		pkmn, err := ctrl.loadOne(id)
+		if err != nil {
+			if _, ok := err.(*PokemonNotFoundError); ok {
+				response.Error(http.StatusNotFound, err.Error())
+				break
+			} else {
+				response.Error(http.StatusInternalServerError, "The server encountered an error while processing your request. Please try again later")
+				break
+			}
+		}
+		response.Data = pkmn
+		response.Status = http.StatusOK
+	}
 }
 
 func (ctrl PokemonController) Update(params martini.Params) {
@@ -93,30 +85,67 @@ func (ctrl PokemonController) Delete() {
 
 }
 
-func (ctrl PokemonController) Metadata(r render.Render) {
-	// options := make(map[string]string)
-	// options["test"] = "test"
-	// r.JSON(http.StatusOK, options)
-}
+func (ctrl PokemonController) Metadata(request *Request) {
+	options := make(map[string]interface{})
+	methods := make(map[string]interface{})
 
-func (ctrl PokemonController) exists(dex string, id int) bool {
-	var result []Species
-	if dex == "national" {
-		ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&result)
-		return len(result) > 0
-	} else {
-		return false
+	methods["GET"] = map[string]interface{}{
+		"url": "/:region/:id",
+		"args": map[string]string{
+			"region": "The region the pokemon is registered to",
+			"id":     "The pokemon's numerical ID in the region specified",
+		},
+		"argument_types": map[string]string{
+			"region": "national|kanto|johto|hoenn|sinnoh|unova|kalos",
+			"id":     "Three-digit integer - ex. 001",
+		},
 	}
+
+	options["resource"] = "/pokemon"
+	options["methods"] = methods
+
+	request.Data = options
+	request.Status = http.StatusOK
 }
 
-func (ctrl PokemonController) loadOne(dex string, id int) (*Species, error) {
-	var result []Species
-	if dex == "national" {
-		err := ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&result)
-		if err != nil {
-			return &result[0], nil
+func regionalIDToNational(region string, id string) int {
+	nationalID, err := strconv.Atoi(id)
+
+	if err != nil {
+		return ERROR_BAD_ID
+	}
+
+	switch region {
+	case "national":
+		break
+	case "kanto":
+		if 0 < nationalID && nationalID < 152 {
+			break
+		} else {
+			nationalID = ERROR_ID_NOT_IN_REGION
 		}
-		return nil, err
+	case "johto":
+		nationalID += 151
+	case "hoenn":
+		nationalID += 251
+	case "sinnoh":
+		nationalID += 386
+	case "unova":
+		nationalID += 493
+	case "kalos":
+		nationalID += 649
 	}
-	return nil, errors.New("NYI")
+	return nationalID
+}
+
+func (ctrl PokemonController) loadOne(id int) (Species, error) {
+	var results []Species
+	err := ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&results)
+	if err != nil {
+		return Species{}, err
+	}
+	if len(results) < 1 {
+		return Species{}, &PokemonNotFoundError{id}
+	}
+	return results[0], nil
 }

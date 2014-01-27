@@ -2,7 +2,9 @@ package controller
 
 import (
 	"github.com/codegangsta/martini"
+	"github.com/codegangsta/martini-contrib/render"
 	"net/http"
+	"strconv"
 )
 
 type Controller interface {
@@ -10,15 +12,44 @@ type Controller interface {
 }
 
 type Request struct {
-	Data     interface{}
-	Status   int
-	Template string `json:"-"`
+	Data         interface{}
+	Status       int
+	Template     string
+	UsingJSON    bool
+	ContainsJSON bool
 }
 
-func HasJSON(req *http.Request) bool {
+func (req *Request) Error(status int, message string) {
+	req.Status = status
+	req.Data = map[string]string{
+		"error": message,
+		"code":  strconv.Itoa(status),
+	}
+}
+
+func JsonRequstRouter(c martini.Context, request *http.Request, r render.Render) {
+	body := &Request{
+		UsingJSON:    useJSON(request),
+		ContainsJSON: hasJSON(request),
+	}
+	c.Map(body)
+
+	c.Next()
+
+	if body.Data == nil {
+		body.Data = new(struct{})
+	}
+	if body.UsingJSON {
+		r.JSON(body.Status, body.Data)
+	} else {
+		r.HTML(body.Status, body.Template, body.Data)
+	}
+}
+
+func hasJSON(req *http.Request) bool {
 	return req.Header.Get("Content-Type") == "application/json"
 }
 
-func UseJSON(req *http.Request) bool {
+func useJSON(req *http.Request) bool {
 	return req.Header.Get("Accept") == "application/json"
 }

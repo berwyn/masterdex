@@ -87,24 +87,18 @@ func openDatabase(driver string, connectionString string) (database *hood.Hood) 
 func configureMartini() *martini.ClassicMartini {
 	m := martini.Classic()
 	helpers := []template.FuncMap{}
+
 	m.Use(render.Renderer(render.Options{
 		Layout:     "layout",
 		Directory:  "views",
 		Extensions: []string{".html"},
 		Funcs:      helpers,
 	}))
-	m.Use(func(c martini.Context, request *http.Request, r render.Render) {
-		body := &Request{}
-		c.Map(body)
-		c.Next()
-		if UseJSON(request) {
-			r.JSON(body.Status, body.Data)
-		} else {
-			r.HTML(body.Status, body.Template, body.Data)
-		}
-	})
+	m.Use(JsonRequstRouter)
+
 	for _, ctrl := range controllers {
 		ctrl.Register(m)
 	}
+
 	return m
 }
