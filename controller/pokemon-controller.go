@@ -81,8 +81,21 @@ func (ctrl PokemonController) Update(params martini.Params) {
 
 }
 
-func (ctrl PokemonController) Delete() {
-
+func (ctrl PokemonController) Delete(request *Request, params martini.Params) {
+	id := regionalIDToNational(params["region"], params["id"])
+	switch id {
+	case ERROR_BAD_ID, ERROR_BAD_REGION, ERROR_ID_NOT_IN_REGION:
+		request.Error(422, "Your request could not be completed as provided")
+	default:
+		var mons []Species
+		ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&mons)
+		_, err := ctrl.Database.Delete(&mons)
+		if err != nil {
+			request.Status = http.StatusNoContent
+		} else {
+			request.Error(http.StatusInternalServerError, "The server has encountered an error, please try again later")
+		}
+	}
 }
 
 func (ctrl PokemonController) Metadata(request *Request) {
