@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	. "github.com/berwyn/masterdex/model"
 	"github.com/codegangsta/martini"
@@ -50,6 +51,15 @@ func (ctrl PokemonController) Index(response *Request) {
 }
 
 func (ctrl PokemonController) Create(response *Request, logger *log.Logger) {
+	if response.ContainsJSON {
+		var pkmn Species
+		var bytes = response.Payload.([]byte)
+		json.Unmarshal(bytes, &pkmn)
+		tx := ctrl.Database.Begin()
+		tx.Save(&pkmn)
+		tx.Commit()
+		response.Status = http.StatusOK
+	}
 }
 
 func (ctrl PokemonController) Read(params martini.Params, response *Request) {

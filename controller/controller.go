@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/codegangsta/martini"
 	"github.com/codegangsta/martini-contrib/render"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -17,6 +19,7 @@ type Request struct {
 	Template     string
 	UsingJSON    bool
 	ContainsJSON bool
+	Payload      interface{}
 }
 
 func (req *Request) Error(status int, message string) {
@@ -31,6 +34,14 @@ func JsonRequstRouter(c martini.Context, request *http.Request, r render.Render)
 	body := &Request{
 		UsingJSON:    useJSON(request),
 		ContainsJSON: hasJSON(request),
+	}
+	if body.ContainsJSON {
+		// TODO Come back and error handle here
+		payload, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			fmt.Println(err)
+		}
+		body.Payload = payload
 	}
 	c.Map(body)
 
