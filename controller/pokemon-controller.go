@@ -54,10 +54,20 @@ func (ctrl PokemonController) Create(response *Request, logger *log.Logger) {
 	if response.ContainsJSON {
 		var pkmn Species
 		var bytes = response.Payload.([]byte)
-		json.Unmarshal(bytes, &pkmn)
+		jsonErr := json.Unmarshal(bytes, &pkmn)
+		if jsonErr != nil {
+			response.Error(422, "There was an issue with your JSON")
+			return
+		}
+
 		tx := ctrl.Database.Begin()
-		tx.Save(&pkmn)
-		tx.Commit()
+		_, saveErr := tx.Save(&pkmn)
+		commitErr := tx.Commit()
+		if saveErr != nil || commitErr != nil {
+			response.Error(http.StatusInternalServerError, "There was a problem with your request, please try again later")
+			return
+		}
+
 		response.Status = http.StatusOK
 	}
 }
