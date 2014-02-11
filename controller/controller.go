@@ -1,3 +1,4 @@
+// Package controller defines all our Martini controllers
 package controller
 
 import (
@@ -9,23 +10,37 @@ import (
 	"strconv"
 )
 
+// Definition contract for all controllers
 type Controller interface {
 	Register(*martini.ClassicMartini)
 }
 
+// Definition contract for all datastores. Specifically,
+// this was implemented so that testing was much more feasible,
+// As well as decoupling controllers from datastores making
+// possible future migrations easier
 type Datastore interface {
 	Find(id string) (interface{}, error)
 }
 
+// This is our wrapper for the transaction
 type Request struct {
-	Data         interface{}
-	Status       int
-	Template     string
-	UsingJSON    bool
+	// This is the payload to return to the client
+	Data interface{}
+	// This is the status to write back
+	Status int
+	// In the case of an HTML request, this is the template
+	// To use
+	Template string
+	// This is so that controller know whether to use a JSON implementation
+	UsingJSON bool
+	// Whether the request contains a JSON payload
 	ContainsJSON bool
-	Payload      interface{}
+	// Any client-sent data
+	Payload interface{}
 }
 
+// Convenience method to set an error status, as well as provide a JSON error body
 func (req *Request) Error(status int, message string) {
 	req.Status = status
 	req.Data = map[string]string{
@@ -34,6 +49,9 @@ func (req *Request) Error(status int, message string) {
 	}
 }
 
+// This is a Martini middle-ware to wrap requests, provide our request wrapper
+// to controllers, as well as serialise the response. This removes a tonne of
+// boilerplate from the controller method bodies
 func JsonRequstRouter(c martini.Context, request *http.Request, r render.Render) {
 	body := &Request{
 		UsingJSON:    useJSON(request),
@@ -61,10 +79,14 @@ func JsonRequstRouter(c martini.Context, request *http.Request, r render.Render)
 	}
 }
 
+// Convenience method to check a request's Content-Type header and determine
+// whether it contains a JSON payload
 func hasJSON(req *http.Request) bool {
 	return req.Header.Get("Content-Type") == "application/json"
 }
 
+// Convenience method to check a request's Accept header and
+// determine if we should send a JSON payload
 func useJSON(req *http.Request) bool {
 	return req.Header.Get("Accept") == "application/json"
 }

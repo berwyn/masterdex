@@ -1,4 +1,4 @@
-masterdex [![Build Status](https://travis-ci.org/berwyn/masterdex.png?branch=master)](https://travis-ci.org/berwyn/masterdex)
+masterdex [![Build Status](https://travis-ci.org/berwyn/masterdex.png?branch=master)](https://travis-ci.org/berwyn/masterdex) [![GoDoc](https://godoc.org/github.com/berwyn/masterdex?status.png)](https://godoc.org/github.com/berwyn/masterdex)
 =========
 
 ## Grokking Go, in style
