@@ -21,6 +21,9 @@ _testmain.go
 
 *.exe
 
+# Testing output
+*.coverprofile
+
 # Grunt
 node_modules/
 .sass-cache

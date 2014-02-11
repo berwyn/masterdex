@@ -13,6 +13,10 @@ type Controller interface {
 	Register(*martini.ClassicMartini)
 }
 
+type Datastore interface {
+	Find(id string) (interface{}, error)
+}
+
 type Request struct {
 	Data         interface{}
 	Status       int
