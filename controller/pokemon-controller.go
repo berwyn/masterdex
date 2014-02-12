@@ -1,11 +1,11 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	. "github.com/berwyn/masterdex/model"
 	"github.com/codegangsta/martini"
 	"github.com/eaigner/hood"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -75,28 +75,30 @@ func (ctrl PokemonController) Index(response *Request) {
 	}
 }
 
-func (ctrl PokemonController) Create(response *Request, logger *log.Logger) {
-	// TODO We'll reimplement this when we figure out Datastore's contract
+func (ctrl PokemonController) Create(response *Request) {
+	var pkmn Species
+	if response.ContainsJSON {
+		jsonErr := json.Unmarshal(response.Payload.([]byte), &pkmn)
+		if jsonErr != nil {
+			response.Error(422, "Your JSON is malformed")
+			return
+		}
+	} else {
+		// TODO: Parse forms
+	}
 
-	// if response.ContainsJSON {
-	// 	var pkmn Species
-	// 	var bytes = response.Payload.([]byte)
-	// 	jsonErr := json.Unmarshal(bytes, &pkmn)
-	// 	if jsonErr != nil {
-	// 		response.Error(422, "There was an issue with your JSON")
-	// 		return
-	// 	}
+	if pkmn.DexNumber == 0 || pkmn.Name == "" {
+		response.Error(422, "You did not provide a valid pokemon")
+		return
+	}
 
-	// 	tx := ctrl.Database.Begin()
-	// 	_, saveErr := tx.Save(&pkmn)
-	// 	commitErr := tx.Commit()
-	// 	if saveErr != nil || commitErr != nil {
-	// 		response.Error(http.StatusInternalServerError, "There was a problem with your request, please try again later")
-	// 		return
-	// 	}
-
-	// 	response.Status = http.StatusOK
-	// }
+	entity, err := ctrl.datastore.Insert(&pkmn)
+	if err != nil {
+		response.Error(http.StatusInternalServerError, "We couldn't save that Pokemon, please try again later")
+	}
+	response.Data = entity
+	response.Status = http.StatusCreated
+	response.Template = "pokemon"
 }
 
 func (ctrl PokemonController) Read(params martini.Params, response *Request) {
@@ -208,6 +210,8 @@ func regionalIDToNational(region string, id string) int {
 		nationalID += 493
 	case "kalos":
 		nationalID += 649
+	default:
+		nationalID = ERROR_BAD_REGION
 	}
 	return nationalID
 }

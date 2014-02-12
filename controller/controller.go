@@ -21,6 +21,7 @@ type Controller interface {
 // possible future migrations easier
 type Datastore interface {
 	Find(id string) (interface{}, error)
+	Insert(entity interface{}) (interface{}, error)
 }
 
 // This is our wrapper for the transaction
