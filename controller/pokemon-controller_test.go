@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"errors"
 	. "github.com/berwyn/masterdex/model"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -11,22 +10,23 @@ import (
 var (
 	bulbasaur = Species{Name: "Bulbasaur", DexNumber: 1}
 	venusaur  = Species{Name: "Venusaur", DexNumber: 2}
+	data      = map[string]Species{
+		"1": bulbasaur,
+		"2": venusaur,
+	}
 )
 
 type MockPokmeonDatastore struct{}
 
 func (MockPokmeonDatastore) Find(id string) (interface{}, error) {
-	if id != "1" {
-		return bulbasaur, &PokemonNotFoundError{id}
+	if pkmn, ok := data[id]; ok {
+		return pkmn, nil
 	}
-	return bulbasaur, nil
+	return Species{}, &PokemonNotFoundError{id}
 }
 
 func (MockPokmeonDatastore) Insert(entity interface{}) (interface{}, error) {
-	if _, ok := entity.(*Species); ok {
-		return entity, nil
-	}
-	return Species{}, errors.New("That isn't a species")
+	return entity, nil
 }
 
 var _ = Describe("Pokemon controller", func() {
@@ -46,6 +46,32 @@ var _ = Describe("Pokemon controller", func() {
 
 		Expect(request.Status).To(Equal(http.StatusOK))
 		Expect(request.Template).To(Equal("pokemon"))
+	})
+
+	Describe("Helper functions", func() {
+		It("should accept all national IDs", func() {
+			result := regionalIDToNational("national", "222")
+
+			Expect(result).To(Equal(222))
+		})
+
+		It("should reject non-integer IDs", func() {
+			badId := regionalIDToNational("national", "72.3")
+
+			Expect(badId).To(Equal(ERROR_BAD_ID))
+		})
+
+		It("should reject invalid regions", func() {
+			badRegion := regionalIDToNational("xzy", "222")
+
+			Expect(badRegion).To(Equal(ERROR_BAD_REGION))
+		})
+
+		It("should reject Kanto IDs above 151", func() {
+			result := regionalIDToNational("kanto", "152")
+
+			Expect(result).To(Equal(ERROR_ID_NOT_IN_REGION))
+		})
 	})
 
 	Describe("GET", func() {
@@ -83,36 +109,11 @@ var _ = Describe("Pokemon controller", func() {
 	})
 
 	Describe("POST", func() {
-		Context("JSON payloads", func() {
-			BeforeEach(func() {
-				request.UsingJSON = true
-				request.ContainsJSON = true
-			})
+		It("should accept a payload", func() {
+			controller.Create(venusaur, &request)
 
-			It("should accept a payload", func() {
-				request.Payload = []byte(`{"name":"Venusaur","dex_number":2}`)
-
-				controller.Create(&request)
-
-				Expect(request.Status).To(Equal(http.StatusCreated))
-				Expect(request.Data).To(BeEquivalentTo(&venusaur))
-			})
-
-			It("should reject malformed payloads", func() {
-				request.Payload = []byte(`{"name":Venusaur,"dex_number"2`)
-
-				controller.Create(&request)
-
-				Expect(request.Status).To(Equal(422))
-			})
-
-			It("should reject payloads that aren't pokemon", func() {
-				request.Payload = []byte(`{"hobbies":"eating cheese"}`)
-
-				controller.Create(&request)
-
-				Expect(request.Status).To(Equal(422))
-			})
+			Expect(request.Status).To(Equal(http.StatusCreated))
+			Expect(request.Data).To(BeEquivalentTo(&venusaur))
 		})
 	})
 })

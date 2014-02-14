@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"encoding/json"
 	"fmt"
 	. "github.com/berwyn/masterdex/model"
 	"github.com/codegangsta/martini"
 	"github.com/eaigner/hood"
+	"github.com/martini-contrib/binding"
 	"net/http"
 	"strconv"
 	"strings"
@@ -57,7 +57,7 @@ type PokemonController struct {
 func (ctrl PokemonController) Register(server *martini.ClassicMartini) {
 	server.Get("/pokemon", ctrl.Index)
 	server.Get("/pokemon/:dex/:id", ctrl.Read)
-	server.Post("/pokemon", ctrl.Create)
+	server.Post("/pokemon", binding.Bind(Species{}), binding.ErrorHandler, ctrl.Create)
 	server.Put("/pokemon/:dex/:id", ctrl.Update)
 	server.Patch("/pokemon/:dex/:id", ctrl.Update)
 	server.Delete("/pokemon/:dex/:id", ctrl.Delete)
@@ -75,23 +75,7 @@ func (ctrl PokemonController) Index(response *Request) {
 	}
 }
 
-func (ctrl PokemonController) Create(response *Request) {
-	var pkmn Species
-	if response.ContainsJSON {
-		jsonErr := json.Unmarshal(response.Payload.([]byte), &pkmn)
-		if jsonErr != nil {
-			response.Error(422, "Your JSON is malformed")
-			return
-		}
-	} else {
-		// TODO: Parse forms
-	}
-
-	if pkmn.DexNumber == 0 || pkmn.Name == "" {
-		response.Error(422, "You did not provide a valid pokemon")
-		return
-	}
-
+func (ctrl PokemonController) Create(pkmn Species, response *Request) {
 	entity, err := ctrl.datastore.Insert(&pkmn)
 	if err != nil {
 		response.Error(http.StatusInternalServerError, "We couldn't save that Pokemon, please try again later")
@@ -137,26 +121,11 @@ func (ctrl PokemonController) Read(params martini.Params, response *Request) {
 }
 
 func (ctrl PokemonController) Update(params martini.Params) {
-
+	// TODO We'll implement this when we figure out Datastore's contract
 }
 
 func (ctrl PokemonController) Delete(request *Request, params martini.Params) {
 	// TODO We'll reimplement this when we figure out Datastore's contract
-
-	// id := regionalIDToNational(params["region"], params["id"])
-	// switch id {
-	// case ERROR_BAD_ID, ERROR_BAD_REGION, ERROR_ID_NOT_IN_REGION:
-	// 	request.Error(422, "Your request could not be completed as provided")
-	// default:
-	// 	var mons []Species
-	// 	ctrl.Database.Where("dex_number", "=", id).Limit(1).Find(&mons)
-	// 	_, err := ctrl.Database.Delete(&mons)
-	// 	if err != nil {
-	// 		request.Status = http.StatusNoContent
-	// 	} else {
-	// 		request.Error(http.StatusInternalServerError, "The server has encountered an error, please try again later")
-	// 	}
-	// }
 }
 
 func (ctrl PokemonController) Metadata(request *Request) {
@@ -195,9 +164,7 @@ func regionalIDToNational(region string, id string) int {
 	case "national":
 		break
 	case "kanto":
-		if 0 < nationalID && nationalID < 152 {
-			break
-		} else {
+		if nationalID < 0 || nationalID > 151 {
 			nationalID = ERROR_ID_NOT_IN_REGION
 		}
 	case "johto":

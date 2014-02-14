@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/martini"
-	"github.com/codegangsta/martini-contrib/render"
 	"github.com/eaigner/hood"
+	"github.com/martini-contrib/render"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -28,8 +28,8 @@ func main() {
 
 	// Populate the controller slice
 	controllers = []Controller{
-		PokemonController{Database: db},
-		ItemController{Database: db},
+		PokemonController{},
+		ItemController{},
 		AboutController{},
 		RootController{},
 	}
