@@ -11,10 +11,10 @@ import (
 
 var (
 	bulbasaur = Species{Name: "Bulbasaur", DexNumber: 1}
-	venusaur  = Species{Name: "Venusaur", DexNumber: 2}
+	ivysaur   = Species{Name: "Ivysaur", DexNumber: 2}
 	data      = map[string]Species{
 		"1": bulbasaur,
-		"2": venusaur,
+		"2": ivysaur,
 	}
 )
 
@@ -123,22 +123,30 @@ var _ = Describe("Pokemon controller", func() {
 
 	Describe("POST", func() {
 		It("should accept a payload", func() {
-			controller.Create(venusaur, &request)
+			controller.Create(ivysaur, &request)
 
 			Expect(request.Status).To(Equal(http.StatusCreated))
-			Expect(request.Data).To(BeEquivalentTo(&venusaur))
+			Expect(request.Data).To(BeEquivalentTo(&ivysaur))
 		})
 	})
 
 	Describe("PUT", func() {
 		It("should accept a payload", func() {
-			venusaurCopy := venusaur
-			venusaurCopy.Name = "VenusaurCopy"
+			ivysaurCopy := ivysaur
+			ivysaurCopy.Name = "IvysaurCopy"
 
-			controller.Update(venusaurCopy, &request)
+			controller.Update(ivysaurCopy, &request)
 
 			Expect(request.Status).To(Equal(http.StatusOK))
-			Expect(request.Data).To(BeEquivalentTo(venusaurCopy))
+			Expect(request.Data).To(BeEquivalentTo(ivysaurCopy))
+		})
+
+		It("should reject pokemon that don't exist", func() {
+			venusaur := Species{Name: "Venusaur", DexNumber: 3}
+
+			controller.Update(venusaur, &request)
+
+			Expect(request.Status).To(Equal(http.StatusNotFound))
 		})
 	})
 })

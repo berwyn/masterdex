@@ -122,9 +122,8 @@ func (ctrl PokemonController) Read(params martini.Params, response *Request) {
 
 func (ctrl PokemonController) Update(payload Species, reqeust *Request) {
 	entity, err := ctrl.datastore.Update(payload)
-
 	if err != nil {
-		if _, ok := err.(PokemonNotFoundError); ok {
+		if _, ok := err.(*PokemonNotFoundError); ok {
 			reqeust.Error(http.StatusNotFound, "The pokemon you're trying to update doesn't exist")
 			return
 		}
@@ -132,7 +131,6 @@ func (ctrl PokemonController) Update(payload Species, reqeust *Request) {
 		reqeust.Error(http.StatusInternalServerError, "There was an error handling your request, please try again later")
 		return
 	}
-
 	reqeust.Data = entity
 	reqeust.Status = http.StatusOK
 	reqeust.Template = "pokemon"
