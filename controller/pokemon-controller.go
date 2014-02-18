@@ -4,7 +4,6 @@ import (
 	"fmt"
 	. "github.com/berwyn/masterdex/model"
 	"github.com/codegangsta/martini"
-	"github.com/martini-contrib/binding"
 	"net/http"
 	"strconv"
 	"strings"
@@ -38,9 +37,9 @@ type PokemonController struct {
 func (ctrl PokemonController) Register(server *martini.ClassicMartini) {
 	server.Get("/pokemon", ctrl.Index)
 	server.Get("/pokemon/:dex/:id", ctrl.Read)
-	server.Post("/pokemon", binding.Bind(Pokemon{}), binding.ErrorHandler, ctrl.Create)
-	server.Put("/pokemon/:dex/:id", binding.Bind(Pokemon{}), binding.ErrorHandler, ctrl.Update)
-	server.Patch("/pokemon/:dex/:id", binding.Bind(Pokemon{}), binding.ErrorHandler, ctrl.Update)
+	server.Post("/pokemon", ctrl.Create)
+	server.Put("/pokemon/:dex/:id", ctrl.Create)
+	server.Patch("/pokemon/:dex/:id", ctrl.Update)
 	server.Delete("/pokemon/:dex/:id", ctrl.Delete)
 	server.Options("/pokemon", ctrl.Metadata)
 }

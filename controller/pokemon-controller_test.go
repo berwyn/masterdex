@@ -150,6 +150,20 @@ var _ = Describe("Pokemon controller", func() {
 			Expect(request.Data).To(BeEquivalentTo(ivysaurCopy))
 		})
 
+		It("should create pokemon that don't exist", func() {
+			venusaur := Pokemon{
+				Name:      "Venusaur",
+				DexNumber: 3,
+			}
+
+			controller.Create(venusaur, &request)
+
+			Expect(request.Status).To(Equal(http.StatusCreated))
+			Expect(request.Data).To(BeEquivalentTo(&venusaur))
+		})
+	})
+
+	Describe("PATCH", func() {
 		It("should reject pokemon that don't exist", func() {
 			venusaur := Pokemon{Name: "Venusaur", DexNumber: 3}
 
