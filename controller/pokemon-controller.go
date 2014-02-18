@@ -136,8 +136,18 @@ func (ctrl PokemonController) Update(payload Species, reqeust *Request) {
 	reqeust.Template = "pokemon"
 }
 
-func (ctrl PokemonController) Delete(request *Request, params martini.Params) {
-	// TODO We'll reimplement this when we figure out Datastore's contract
+func (ctrl PokemonController) Delete(params martini.Params, request *Request) {
+	err := ctrl.datastore.Delete(params["id"])
+	if err != nil {
+		if _, ok := err.(*PokemonNotFoundError); ok {
+			request.Error(http.StatusNotFound, err.Error())
+			return
+		}
+		request.Error(http.StatusInternalServerError, "There was an issue processing your request, please try again later")
+		return
+	}
+	request.Status = http.StatusNoContent
+	request.Template = "pokemon"
 }
 
 func (ctrl PokemonController) Metadata(request *Request) {

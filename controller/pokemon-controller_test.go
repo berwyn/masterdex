@@ -42,6 +42,13 @@ func (MockPokmeonDatastore) Update(entity interface{}) (interface{}, error) {
 	return Species{}, errors.New("You didn't provide a pokemon")
 }
 
+func (MockPokmeonDatastore) Delete(id string) error {
+	if _, ok := data[id]; ok {
+		return nil
+	}
+	return &PokemonNotFoundError{id}
+}
+
 var _ = Describe("Pokemon controller", func() {
 
 	var (
@@ -69,9 +76,11 @@ var _ = Describe("Pokemon controller", func() {
 		})
 
 		It("should reject non-integer IDs", func() {
-			badId := regionalIDToNational("national", "72.3")
+			floatID := regionalIDToNational("national", "72.3")
+			stringID := regionalIDToNational("national", "xzy")
 
-			Expect(badId).To(Equal(ERROR_BAD_ID))
+			Expect(floatID).To(Equal(ERROR_BAD_ID))
+			Expect(stringID).To(Equal(ERROR_BAD_ID))
 		})
 
 		It("should reject invalid regions", func() {
@@ -145,6 +154,20 @@ var _ = Describe("Pokemon controller", func() {
 			venusaur := Species{Name: "Venusaur", DexNumber: 3}
 
 			controller.Update(venusaur, &request)
+
+			Expect(request.Status).To(Equal(http.StatusNotFound))
+		})
+	})
+
+	Describe("DELETE", func() {
+		It("should accept delete requests for existing pokemon", func() {
+			controller.Delete(map[string]string{"id": "2"}, &request)
+
+			Expect(request.Status).To(Equal(http.StatusNoContent))
+		})
+
+		It("should reject delete requests for pokemon that don't exist", func() {
+			controller.Delete(map[string]string{"id": "5"}, &request)
 
 			Expect(request.Status).To(Equal(http.StatusNotFound))
 		})

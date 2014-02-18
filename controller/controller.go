@@ -27,6 +27,9 @@ type Datastore interface {
 	// Given an entity, this will update existing ones. Use this if you want
 	// an explicit failure for non-existing entities
 	Update(entity interface{}) (interface{}, error)
+	// Given a unique string ID, this deletes the entity in the
+	// datastore
+	Delete(id string) error
 }
 
 // This is our wrapper for the transaction
