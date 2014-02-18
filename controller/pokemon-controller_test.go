@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	bulbasaur = Species{Name: "Bulbasaur", DexNumber: 1}
-	ivysaur   = Species{Name: "Ivysaur", DexNumber: 2}
-	data      = map[string]Species{
+	bulbasaur = Pokemon{Name: "Bulbasaur", DexNumber: 1}
+	ivysaur   = Pokemon{Name: "Ivysaur", DexNumber: 2}
+	data      = map[string]Pokemon{
 		"1": bulbasaur,
 		"2": ivysaur,
 	}
@@ -24,7 +24,7 @@ func (MockPokmeonDatastore) Find(id string) (interface{}, error) {
 	if pkmn, ok := data[id]; ok {
 		return pkmn, nil
 	}
-	return Species{}, &PokemonNotFoundError{id}
+	return Pokemon{}, &PokemonNotFoundError{id}
 }
 
 func (MockPokmeonDatastore) Insert(entity interface{}) (interface{}, error) {
@@ -32,14 +32,14 @@ func (MockPokmeonDatastore) Insert(entity interface{}) (interface{}, error) {
 }
 
 func (MockPokmeonDatastore) Update(entity interface{}) (interface{}, error) {
-	if pkmn, ok := entity.(Species); ok {
+	if pkmn, ok := entity.(Pokemon); ok {
 		var idString = strconv.Itoa(pkmn.DexNumber)
 		if _, ok := data[idString]; ok {
 			return entity, nil
 		}
-		return Species{}, &PokemonNotFoundError{idString}
+		return Pokemon{}, &PokemonNotFoundError{idString}
 	}
-	return Species{}, errors.New("You didn't provide a pokemon")
+	return Pokemon{}, errors.New("You didn't provide a pokemon")
 }
 
 func (MockPokmeonDatastore) Delete(id string) error {
@@ -151,7 +151,7 @@ var _ = Describe("Pokemon controller", func() {
 		})
 
 		It("should reject pokemon that don't exist", func() {
-			venusaur := Species{Name: "Venusaur", DexNumber: 3}
+			venusaur := Pokemon{Name: "Venusaur", DexNumber: 3}
 
 			controller.Update(venusaur, &request)
 
@@ -161,13 +161,13 @@ var _ = Describe("Pokemon controller", func() {
 
 	Describe("DELETE", func() {
 		It("should accept delete requests for existing pokemon", func() {
-			controller.Delete(map[string]string{"id": "2"}, &request)
+			controller.Delete(map[string]string{"dex": "national", "id": "2"}, &request)
 
 			Expect(request.Status).To(Equal(http.StatusNoContent))
 		})
 
 		It("should reject delete requests for pokemon that don't exist", func() {
-			controller.Delete(map[string]string{"id": "5"}, &request)
+			controller.Delete(map[string]string{"dex": "national", "id": "5"}, &request)
 
 			Expect(request.Status).To(Equal(http.StatusNotFound))
 		})

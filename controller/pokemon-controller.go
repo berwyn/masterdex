@@ -4,7 +4,6 @@ import (
 	"fmt"
 	. "github.com/berwyn/masterdex/model"
 	"github.com/codegangsta/martini"
-	"github.com/eaigner/hood"
 	"github.com/martini-contrib/binding"
 	"net/http"
 	"strconv"
@@ -30,24 +29,6 @@ func (err PokemonNotFoundError) Error() string {
 	return fmt.Sprintf("Could not find the pokemon with ID %d", err.id)
 }
 
-// Struct that implements Datastore for Pokémon
-type PokemonDatastore struct {
-	database *hood.Hood
-}
-
-// Finds one Pokémon by ID
-func (store PokemonDatastore) Find(id string) (Species, error) {
-	var results []Species
-	err := store.database.Where("dex_number", "=", id).Limit(1).Find(&results)
-	if err != nil {
-		return Species{}, err
-	}
-	if len(results) < 1 {
-		return Species{}, &PokemonNotFoundError{id}
-	}
-	return results[0], nil
-}
-
 // Martini controller for /pokemon
 type PokemonController struct {
 	datastore Datastore
@@ -57,9 +38,9 @@ type PokemonController struct {
 func (ctrl PokemonController) Register(server *martini.ClassicMartini) {
 	server.Get("/pokemon", ctrl.Index)
 	server.Get("/pokemon/:dex/:id", ctrl.Read)
-	server.Post("/pokemon", binding.Bind(Species{}), binding.ErrorHandler, ctrl.Create)
-	server.Put("/pokemon/:dex/:id", binding.Bind(Species{}), binding.ErrorHandler, ctrl.Update)
-	server.Patch("/pokemon/:dex/:id", binding.Bind(Species{}), binding.ErrorHandler, ctrl.Update)
+	server.Post("/pokemon", binding.Bind(Pokemon{}), binding.ErrorHandler, ctrl.Create)
+	server.Put("/pokemon/:dex/:id", binding.Bind(Pokemon{}), binding.ErrorHandler, ctrl.Update)
+	server.Patch("/pokemon/:dex/:id", binding.Bind(Pokemon{}), binding.ErrorHandler, ctrl.Update)
 	server.Delete("/pokemon/:dex/:id", ctrl.Delete)
 	server.Options("/pokemon", ctrl.Metadata)
 }
@@ -75,7 +56,7 @@ func (ctrl PokemonController) Index(response *Request) {
 	}
 }
 
-func (ctrl PokemonController) Create(pkmn Species, response *Request) {
+func (ctrl PokemonController) Create(pkmn Pokemon, response *Request) {
 	entity, err := ctrl.datastore.Insert(&pkmn)
 	if err != nil {
 		response.Error(http.StatusInternalServerError, "We couldn't save that Pokemon, please try again later")
@@ -120,7 +101,7 @@ func (ctrl PokemonController) Read(params martini.Params, response *Request) {
 	}
 }
 
-func (ctrl PokemonController) Update(payload Species, reqeust *Request) {
+func (ctrl PokemonController) Update(payload Pokemon, reqeust *Request) {
 	entity, err := ctrl.datastore.Update(payload)
 	if err != nil {
 		if _, ok := err.(*PokemonNotFoundError); ok {
@@ -137,7 +118,8 @@ func (ctrl PokemonController) Update(payload Species, reqeust *Request) {
 }
 
 func (ctrl PokemonController) Delete(params martini.Params, request *Request) {
-	err := ctrl.datastore.Delete(params["id"])
+	id := strconv.Itoa(regionalIDToNational(params["dex"], params["id"]))
+	err := ctrl.datastore.Delete(id)
 	if err != nil {
 		if _, ok := err.(*PokemonNotFoundError); ok {
 			request.Error(http.StatusNotFound, err.Error())
