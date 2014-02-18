@@ -58,8 +58,8 @@ func (ctrl PokemonController) Register(server *martini.ClassicMartini) {
 	server.Get("/pokemon", ctrl.Index)
 	server.Get("/pokemon/:dex/:id", ctrl.Read)
 	server.Post("/pokemon", binding.Bind(Species{}), binding.ErrorHandler, ctrl.Create)
-	server.Put("/pokemon/:dex/:id", ctrl.Update)
-	server.Patch("/pokemon/:dex/:id", ctrl.Update)
+	server.Put("/pokemon/:dex/:id", binding.Bind(Species{}), binding.ErrorHandler, ctrl.Update)
+	server.Patch("/pokemon/:dex/:id", binding.Bind(Species{}), binding.ErrorHandler, ctrl.Update)
 	server.Delete("/pokemon/:dex/:id", ctrl.Delete)
 	server.Options("/pokemon", ctrl.Metadata)
 }
@@ -120,8 +120,22 @@ func (ctrl PokemonController) Read(params martini.Params, response *Request) {
 	}
 }
 
-func (ctrl PokemonController) Update(params martini.Params) {
-	// TODO We'll implement this when we figure out Datastore's contract
+func (ctrl PokemonController) Update(payload Species, reqeust *Request) {
+	entity, err := ctrl.datastore.Update(payload)
+
+	if err != nil {
+		if _, ok := err.(PokemonNotFoundError); ok {
+			reqeust.Error(http.StatusNotFound, "The pokemon you're trying to update doesn't exist")
+			return
+		}
+
+		reqeust.Error(http.StatusInternalServerError, "There was an error handling your request, please try again later")
+		return
+	}
+
+	reqeust.Data = entity
+	reqeust.Status = http.StatusOK
+	reqeust.Template = "pokemon"
 }
 
 func (ctrl PokemonController) Delete(request *Request, params martini.Params) {
@@ -156,7 +170,7 @@ func (ctrl PokemonController) Metadata(request *Request) {
 func regionalIDToNational(region string, id string) int {
 	nationalID, err := strconv.Atoi(id)
 
-	if err != nil {
+	if err != nil || nationalID < 0 {
 		return ERROR_BAD_ID
 	}
 
@@ -164,7 +178,7 @@ func regionalIDToNational(region string, id string) int {
 	case "national":
 		break
 	case "kanto":
-		if nationalID < 0 || nationalID > 151 {
+		if nationalID > 151 {
 			nationalID = ERROR_ID_NOT_IN_REGION
 		}
 	case "johto":

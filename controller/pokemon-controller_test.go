@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"errors"
 	. "github.com/berwyn/masterdex/model"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"net/http"
+	"strconv"
 )
 
 var (
@@ -27,6 +29,17 @@ func (MockPokmeonDatastore) Find(id string) (interface{}, error) {
 
 func (MockPokmeonDatastore) Insert(entity interface{}) (interface{}, error) {
 	return entity, nil
+}
+
+func (MockPokmeonDatastore) Update(entity interface{}) (interface{}, error) {
+	if pkmn, ok := entity.(Species); ok {
+		var idString = strconv.Itoa(pkmn.DexNumber)
+		if _, ok := data[idString]; ok {
+			return entity, nil
+		}
+		return Species{}, &PokemonNotFoundError{idString}
+	}
+	return Species{}, errors.New("You didn't provide a pokemon")
 }
 
 var _ = Describe("Pokemon controller", func() {
@@ -114,6 +127,18 @@ var _ = Describe("Pokemon controller", func() {
 
 			Expect(request.Status).To(Equal(http.StatusCreated))
 			Expect(request.Data).To(BeEquivalentTo(&venusaur))
+		})
+	})
+
+	Describe("PUT", func() {
+		It("should accept a payload", func() {
+			venusaurCopy := venusaur
+			venusaurCopy.Name = "VenusaurCopy"
+
+			controller.Update(venusaurCopy, &request)
+
+			Expect(request.Status).To(Equal(http.StatusOK))
+			Expect(request.Data).To(BeEquivalentTo(venusaurCopy))
 		})
 	})
 })

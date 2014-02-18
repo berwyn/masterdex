@@ -20,8 +20,13 @@ type Controller interface {
 // As well as decoupling controllers from datastores making
 // possible future migrations easier
 type Datastore interface {
+	// Given a unique string ID, returns the first entity to match
 	Find(id string) (interface{}, error)
+	// Given an entity, this will insert new entries or update existing entries
 	Insert(entity interface{}) (interface{}, error)
+	// Given an entity, this will update existing ones. Use this if you want
+	// an explicit failure for non-existing entities
+	Update(entity interface{}) (interface{}, error)
 }
 
 // This is our wrapper for the transaction
