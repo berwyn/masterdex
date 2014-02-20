@@ -2,11 +2,10 @@ package controller
 
 import (
 	"github.com/codegangsta/martini"
-	"github.com/eaigner/hood"
 )
 
 type ItemController struct {
-	Database *hood.Hood
+	datastore Datastore
 }
 
 func (ctrl ItemController) Register(server *martini.ClassicMartini) {
