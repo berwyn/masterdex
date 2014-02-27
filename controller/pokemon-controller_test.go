@@ -12,7 +12,7 @@ import (
 var (
 	bulbasaur = Pokemon{Name: "Bulbasaur", DexNumber: 1}
 	ivysaur   = Pokemon{Name: "Ivysaur", DexNumber: 2}
-	data      = map[string]Pokemon{
+	pkmnData  = map[string]Pokemon{
 		"1": bulbasaur,
 		"2": ivysaur,
 	}
@@ -21,7 +21,7 @@ var (
 type MockPokmeonDatastore struct{}
 
 func (MockPokmeonDatastore) Find(id string) (interface{}, error) {
-	if pkmn, ok := data[id]; ok {
+	if pkmn, ok := pkmnData[id]; ok {
 		return pkmn, nil
 	}
 	return Pokemon{}, &PokemonNotFoundError{id}
@@ -34,7 +34,7 @@ func (MockPokmeonDatastore) Insert(entity interface{}) (interface{}, error) {
 func (MockPokmeonDatastore) Update(entity interface{}) (interface{}, error) {
 	if pkmn, ok := entity.(Pokemon); ok {
 		var idString = strconv.Itoa(pkmn.DexNumber)
-		if _, ok := data[idString]; ok {
+		if _, ok := pkmnData[idString]; ok {
 			return entity, nil
 		}
 		return Pokemon{}, &PokemonNotFoundError{idString}
@@ -43,7 +43,7 @@ func (MockPokmeonDatastore) Update(entity interface{}) (interface{}, error) {
 }
 
 func (MockPokmeonDatastore) Delete(id string) error {
-	if _, ok := data[id]; ok {
+	if _, ok := pkmnData[id]; ok {
 		return nil
 	}
 	return &PokemonNotFoundError{id}
