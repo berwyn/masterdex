@@ -22,7 +22,7 @@ module.exports = (grunt) ->
           sourceMap: 'public/css'
         cwd: 'assets/stylesheets'
         src: '*.scss'
-        dest: 'assets/stylesheets'
+        dest: 'public/css'
         expand: true
         ext: '.css'
 
@@ -31,7 +31,7 @@ module.exports = (grunt) ->
         files: ['assets/scripts/*.coffee']
         tasks: ['coffee']
       styles:
-        files: ['assets/stylesheets/*.sass']
+        files: ['assets/stylesheets/*.scss']
         tasks: ['sass']
 
   grunt.registerTask 'default', ['coffee', 'sass', 'watch']

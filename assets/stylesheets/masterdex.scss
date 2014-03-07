@@ -4,7 +4,7 @@ $red: #CF1423;
   box-shadow: $top $left $blur $color #{$inset};
 }
 
-* {
+*:not(.fa) {
   font-family: 'Roboto', sans-serif !important;
 }
 
@@ -16,9 +16,11 @@ body {
 
 body {
   padding-top: 50px;
+}
 
-  &[data-controller="home"],
-  &[data-controller="home"] > footer {
+main {
+  &.home,
+  &.home ~ footer {
     color: #fff;
     background-color: $red;
   }
@@ -27,11 +29,16 @@ body {
 footer {
   height: 80px;
   margin-top: -80px;
-  font-size: .8em;
+  padding: 10px;
 
   span {
     display: block;
-    text-align: center;
+    font-size: .8em;
+
+    &.love {
+      font-size: 3em;
+      padding-right: 20px;
+    }
   }
 }
 
@@ -45,10 +52,10 @@ footer {
   position: absolute;
   top: 0;
   right: -130px;
-  z-index: -10;
 }
 
-.btn-outline-inverse {
+.btn-outline-inverse,
+.btn-outline-inverse:focus {
   color: #fff;
   background-color: transparent;
   border-color: #fff;
@@ -67,7 +74,6 @@ footer {
   overflow: hidden;
 
   .braixen {
-    z-index: inherit;
     margin-top: -160px;
   }
 }
@@ -87,17 +93,30 @@ footer {
     }
   }
 
+  .navbar-toggle {
+    padding: 6px 10px;
+  }
+
   .navbar-brand {
     padding: 0px;
   }
 
   .pokeball-header {
     width: 100px;
-    height: 100px;
+    height: 75px;
     margin-top: -25px;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-image: url('/img/pokeball.svg');
+  }
+
+  .navbar-collapse.in,
+  .navbar-collapse.collapsing {
+    background: #fff;
+
+    a {
+      color: $red;
+    }
   }
 }
 
@@ -109,8 +128,17 @@ footer {
 
 .content-home {
   position: relative;
+  margin-left: 10px;
 
-  div:first-child {
+  h1, p {
+    z-index: 1;
+  }
+
+  .braixen {
+    z-index: 0;
+  }
+
+  #host {
     padding-top: 140px;
     padding-bottom: 140px;
   }
