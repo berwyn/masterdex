@@ -46,13 +46,9 @@ func (ctrl PokemonController) Register(server *martini.ClassicMartini) {
 
 // Load HTML, or for JSON requests return the same as OPTIONS
 func (ctrl PokemonController) Index(response *Request) {
-	if response.UsingJSON {
-		ctrl.Metadata(response)
-	} else {
-		response.Status = 200
-		response.Data = new(struct{})
-		response.Template = "pokemon"
-	}
+	response.Status = 200
+	response.Data = new(struct{})
+	response.Template = "pokemon"
 }
 
 func (ctrl PokemonController) Create(pkmn Pokemon, response *Request) {

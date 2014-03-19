@@ -7,7 +7,19 @@ import (
 	"github.com/martini-contrib/render"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
+	"strings"
+)
+
+const (
+	mime_type_html = "text/html"
+	mime_type_json = "application/json"
+)
+
+var (
+	html_regex = regexp.MustCompile(`/text\/html/i`)
+	json_regex = regexp.MustCompile(`/application\/json/i`)
 )
 
 // Definition contract for all controllers
@@ -47,6 +59,8 @@ type Request struct {
 	ContainsJSON bool
 	// Any client-sent data
 	Payload interface{}
+	// MimeType of response to render
+	ResponseType string
 }
 
 // Convenience method to set an error status, as well as provide a JSON error body
@@ -63,39 +77,54 @@ func (req *Request) Error(status int, message string) {
 // boilerplate from the controller method bodies
 func JsonRequstRouter(c martini.Context, request *http.Request, r render.Render) {
 	body := &Request{
-		UsingJSON:    useJSON(request),
-		ContainsJSON: hasJSON(request),
+		Status: 0,
 	}
-	if body.ContainsJSON {
-		// TODO Come back and error handle here
-		payload, err := ioutil.ReadAll(request.Body)
-		if err != nil {
-			fmt.Println(err)
-		}
-		body.Payload = payload
+	setResponseType(body, request)
+	setPayload(body, request)
+	if body.Status != 0 {
+		return
 	}
-	c.Map(body)
 
+	c.Map(body)
 	c.Next()
 
 	if body.Data == nil {
 		body.Data = new(struct{})
 	}
-	if body.UsingJSON {
-		r.JSON(body.Status, body.Data)
-	} else {
+	switch body.ResponseType {
+	default:
+		fallthrough
+	case mime_type_html:
 		r.HTML(body.Status, body.Template, body.Data)
+	case mime_type_json:
+		r.JSON(body.Status, body.Data)
 	}
 }
 
-// Convenience method to check a request's Content-Type header and determine
-// whether it contains a JSON payload
-func hasJSON(req *http.Request) bool {
-	return req.Header.Get("Content-Type") == "application/json"
+func setResponseType(body *Request, request *http.Request) {
+	for _, part := range strings.Split(request.Header.Get("Accept"), ",") {
+		switch {
+		default:
+			fallthrough
+		case html_regex.MatchString(part):
+			body.ResponseType = mime_type_html
+			break
+		case json_regex.MatchString(part):
+			body.ResponseType = mime_type_json
+			break
+		}
+	}
 }
 
-// Convenience method to check a request's Accept header and
-// determine if we should send a JSON payload
-func useJSON(req *http.Request) bool {
-	return req.Header.Get("Accept") == "application/json"
+func setPayload(body *Request, request *http.Request) {
+	if request.Header.Get("Content-Type") == "application/json" {
+		payload, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			fmt.Println(err)
+			body.Error(http.StatusInternalServerError, "We could not process your request, please try again later")
+			return
+		}
+		body.ContainsJSON = true
+		body.Payload = payload
+	}
 }

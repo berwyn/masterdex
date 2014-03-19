@@ -4,54 +4,16 @@ $red: #CF1423;
   box-shadow: $top $left $blur $color #{$inset};
 }
 
-*:not(.fa) {
-  font-family: 'Roboto', sans-serif !important;
-}
+* {
+  box-sizing: border-box;
 
-html,
-body {
-  min-width: 515px;
-  height: 100%;
-}
-
-body {
-  padding-top: 50px;
-}
-
-main {
-  &.home,
-  &.home ~ footer {
-    color: #fff;
-    background-color: $red;
+  &:not(.fa) {
+    font-family: 'Roboto', sans-serif !important;
   }
 }
 
-footer {
-  height: 80px;
-  margin-top: -80px;
-  padding: 10px;
-
-  span {
-    display: block;
-    font-size: .8em;
-
-    &.love {
-      font-size: 3em;
-      padding-right: 20px;
-    }
-  }
-}
-
-
-.braixen {
-  background-image: url('/img/braixen.png');
-  background-repeat: no-repeat;
-  background-size: contain;
-  height: 800px;
-  width: 600px;
-  position: absolute;
-  top: 0;
-  right: -130px;
+body {
+  background-color: #e8e8e8;
 }
 
 .btn-outline-inverse,
@@ -66,16 +28,14 @@ footer {
   }
 }
 
-.header {
-  position: relative;
-  color: #fff;
-  background-color: $red;
-  padding: 30px 15px 40px;
-  overflow: hidden;
+.justify {
+  text-align: center;
+}
 
-  .braixen {
-    margin-top: -160px;
-  }
+.card {
+  border-radius: 2px;
+  background: #fff;
+  margin: 4px;
 }
 
 .navbar-masterdex {
@@ -120,42 +80,40 @@ footer {
   }
 }
 
-.content {
-  overflow: hidden;
-  min-height: 100%;
-  padding-bottom: 80px;
-}
-
 .content-home {
-  position: relative;
-  margin-left: 10px;
-
-  h1, p {
-    z-index: 1;
-  }
-
-  .braixen {
-    z-index: 0;
-  }
-
-  #host {
-    padding-top: 140px;
-    padding-bottom: 140px;
-  }
-
-  .masthead {
-    font-size: 100px;
-  }
-
-  .lead {
-    font-size: 30px;
-    margin-right: 25%;
+  .jumbotron {
+    background-color: $red;
+    color: white;
+    max-height: 350px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 0px;
   }
 
   .btn-outline-inverse {
-    width: auto;
+    width: 350px;
     margin: 20px 5px 20px 0px;
     padding: 18px 24px;
     font-size: 21px;
+  }
+
+  .callout-image {
+    max-width: 50%;
+    min-height: 125px;
+  }
+
+  .callout-block {
+    background-color: #fff;
+  }
+
+  .callout {
+    border-color: $red;
+    border-left-width: 1px;
+    border-left-style: solid;
+    margin: 8px 0px;
+
+    &:first-of-type {
+      border-left-width: 0px;
+    }
   }
 }

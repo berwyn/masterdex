@@ -15,7 +15,7 @@
 </head>
 <body ng-controller="AppCtrl">
   {{template "header" .}}
-  <main class="content {{.cssClass}}" role="main">
+  <main class="content" role="main">
     {{yield}}
   </main>
   {{template "footer" .}}
