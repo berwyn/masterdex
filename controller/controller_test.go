@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"net/http"
@@ -11,35 +12,35 @@ var _ = Describe("Controller", func() {
 	var (
 		request     *http.Request
 		jsonRequest *http.Request
+		response    *Request
+		payload     []byte
 	)
 
 	BeforeEach(func() {
+		payload = []byte(`{"first": "value1", "second": "value2"}`)
 		request, _ = http.NewRequest("GET", "localhost", nil)
-		jsonRequest, _ = http.NewRequest("GET", "localhost", nil)
-		jsonRequest.Header.Add("Content-Type", "application/json")
-		jsonRequest.Header.Add("Accept", "application/json")
+		jsonRequest, _ = http.NewRequest("POST", "localhost", bytes.NewReader(payload))
+		jsonRequest.Header.Add("Content-Type", mime_type_json)
+		jsonRequest.Header.Add("Accept", mime_type_json)
+		response = &Request{}
 	})
 
-	Describe("Checking for JSON reqeusts", func() {
-		Context("HTML requests", func() {
-			It("should reject HTML Content-Types", func() {
-				Expect(hasJSON(request)).To(Equal(false))
-			})
-
-			It("should reject HTML Accept headers", func() {
-				Expect(useJSON(request)).To(Equal(false))
-			})
+	Describe("Recognising the accept type", func() {
+		It("should recognise text/html", func() {
+			setResponseType(response, request)
+			Expect(response.ResponseType).To(Equal(mime_type_html))
 		})
 
-		Context("JSON requests", func() {
-			It("should accept JSON Content-Types", func() {
-				Expect(hasJSON(jsonRequest)).To(Equal(true))
-			})
-
-			It("should accept JSON Accept headers", func() {
-				Expect(useJSON(jsonRequest)).To(Equal(true))
-			})
+		It("should recognise application/json", func() {
+			setResponseType(response, jsonRequest)
+			Expect(response.ResponseType).To(Equal(mime_type_json))
 		})
 	})
 
+	Describe("Parsing payloads", func() {
+		It("should deserialise JSON data", func() {
+			setPayload(response, jsonRequest)
+			Expect(response.Payload).To(Equal(payload))
+		})
+	})
 })

@@ -18,8 +18,8 @@ const (
 )
 
 var (
-	html_regex = regexp.MustCompile(`/text\/html/i`)
-	json_regex = regexp.MustCompile(`/application\/json/i`)
+	html_regex = regexp.MustCompile(`text\/html`)
+	json_regex = regexp.MustCompile(`application\/json`)
 )
 
 // Definition contract for all controllers
@@ -103,6 +103,7 @@ func JsonRequstRouter(c martini.Context, request *http.Request, r render.Render)
 
 func setResponseType(body *Request, request *http.Request) {
 	for _, part := range strings.Split(request.Header.Get("Accept"), ",") {
+		fmt.Println(part)
 		switch {
 		default:
 			fallthrough
@@ -127,4 +128,5 @@ func setPayload(body *Request, request *http.Request) {
 		body.ContainsJSON = true
 		body.Payload = payload
 	}
+	// We can add more options here later, for example yaml
 }
