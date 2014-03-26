@@ -103,16 +103,15 @@ func JsonRequstRouter(c martini.Context, request *http.Request, r render.Render)
 
 func setResponseType(body *Request, request *http.Request) {
 	for _, part := range strings.Split(request.Header.Get("Accept"), ",") {
-		fmt.Println(part)
 		switch {
 		default:
 			fallthrough
 		case html_regex.MatchString(part):
 			body.ResponseType = mime_type_html
-			break
+			return
 		case json_regex.MatchString(part):
 			body.ResponseType = mime_type_json
-			break
+			return
 		}
 	}
 }

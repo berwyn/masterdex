@@ -19,6 +19,12 @@ go install github.com/berwyn/masterdex
 masterdex
 ```
 
+## Things of note
+
+  1. The UI is constantly in flux. Don't worry if some CSS is broken or placeholder images show up.
+  2. Tests may occasionally break. Sometimes, you get in the flow of refactoring and forget that you're making breaking changes.
+  3. This isn't to be considered the peak of Go code. I'm a scrub, and this is me learning stuff.
+
 ## Licensing
 
 All files, unless otherwise noted, are licensed under the permissive Apache v2 license. Grab some code, check it out, and feel free to share anything you learn from it!
