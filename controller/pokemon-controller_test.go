@@ -18,7 +18,9 @@ var (
 	}
 )
 
-type MockPokmeonDatastore struct{}
+type MockPokmeonDatastore struct{
+	MockDatastore
+}
 
 func (MockPokmeonDatastore) Find(id string) (interface{}, error) {
 	if pkmn, ok := pkmnData[id]; ok {

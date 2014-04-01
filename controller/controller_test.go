@@ -2,11 +2,34 @@ package controller
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"net/http"
 )
+
+type MockDatastore struct{
+	store map[string]interface{}
+}
+
+func (datastore MockDatastore) Find(id string) (interface{}, error) {
+	if entity, ok := datastore.store[id]; ok {
+		return entity, nil
+	}
+	return new(struct{}), errors.New("Doesn't exist")
+}
+
+func (datastore MockDatastore) Insert(entity interface{}) (interface{}, error) {
+	if entity != nil {
+		return entity, nil
+	}
+	return new(struct{}), errors.New("Nil insert")
+}
+
+func (datastore MockDatastore) Update(entity interface{}) (interface{}, error) {
+	
+}
 
 var _ = Describe("Controller", func() {
 

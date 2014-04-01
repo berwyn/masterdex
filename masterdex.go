@@ -5,8 +5,10 @@ import (
 
 	"encoding/json"
 	"fmt"
+	// "github.com/SlyMarbo/spdy"
 	"github.com/codegangsta/martini"
 	"github.com/eaigner/hood"
+	"github.com/martini-contrib/gzip"
 	"github.com/martini-contrib/render"
 	"html/template"
 	"io/ioutil"
@@ -41,7 +43,10 @@ func main() {
 	// Start the server
 	p := getPort()
 	debugLog("Booting server on " + p)
-	http.ListenAndServe(p, nil)
+	err := http.ListenAndServeTLS(p, "cert.pem", "key.pem", nil)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func debugLog(message string) {
@@ -88,6 +93,7 @@ func configureMartini() *martini.ClassicMartini {
 	m := martini.Classic()
 	helpers := []template.FuncMap{}
 
+	m.Use(gzip.All())
 	m.Use(render.Renderer(render.Options{
 		Layout:     "layout",
 		Directory:  "views",
