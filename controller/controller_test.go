@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-type MockDatastore struct{
+type MockDatastore struct {
 	store map[string]interface{}
 }
 
@@ -27,8 +27,11 @@ func (datastore MockDatastore) Insert(entity interface{}) (interface{}, error) {
 	return new(struct{}), errors.New("Nil insert")
 }
 
-func (datastore MockDatastore) Update(entity interface{}) (interface{}, error) {
-	
+func (datastore MockDatastore) Update(entity Entity) (interface{}, error) {
+	if entity.Validate() {
+		return entity, nil
+	}
+	return new(Entity{}), errors.New("Failed to validate")
 }
 
 var _ = Describe("Controller", func() {

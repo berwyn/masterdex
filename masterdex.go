@@ -43,10 +43,7 @@ func main() {
 	// Start the server
 	p := getPort()
 	debugLog("Booting server on " + p)
-	err := http.ListenAndServeTLS(p, "cert.pem", "key.pem", nil)
-	if err != nil {
-		fmt.Println(err)
-	}
+	http.ListenAndServeTLS(p, "cert.pem", "key.pem", nil)
 }
 
 func debugLog(message string) {
