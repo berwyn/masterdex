@@ -36,3 +36,7 @@ public/js/
 # TLS
 cert.pem
 key.pem
+
+# Testing
+*.coverprofile
+*.test

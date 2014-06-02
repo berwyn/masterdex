@@ -5,7 +5,6 @@ import (
 
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 )
 
@@ -13,14 +12,17 @@ type PokemonController struct {
 	Data DataStore
 }
 
-func (controller *PokemonController) Register(router *mux.Router) {
+func (controller *PokemonController) Register(router *http.ServeMux) {
 
 }
 
 func (controller *PokemonController) Index(w http.ResponseWriter, r *http.Request) {
-	payload, err := json.Marshal(controller.Data.FindAll())
-	if err != nil {
-		fmt.Fprintf(w, "%v", payload)
+	entities := controller.Data.FindAll()
+	payload, err := json.Marshal(&entities)
+	if err == nil {
+		fmt.Fprintf(w, "%v", string(payload[:]))
+	} else {
+		fmt.Fprintf(w, `{"error":500}`)
 	}
 }
 

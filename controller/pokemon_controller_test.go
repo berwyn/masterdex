@@ -5,33 +5,32 @@ import (
 	. "github.com/berwyn/masterdex/controller"
 
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/ghttp"
 )
 
 var (
-	server     *Server
 	controller PokemonController
 	bulbasaur  Pokemon
 	ivysaur    Pokemon
+	data       map[int]Pokemon
 )
 
 type MockDataStore struct {
-	data map[int]Pokemon
+	Data map[int]Pokemon
 }
 
 func (store MockDataStore) Find(id int) interface{} {
-	return store.data[id]
+	return store.Data[id]
 }
 
 func (store MockDataStore) FindAll() interface{} {
-	values := make([]Pokemon, len(store.data))
-	for _, value := range store.data {
+	values := make([]Pokemon, 0, len(store.Data))
+	for _, value := range store.Data {
 		values = append(values, value)
 	}
 	return values
@@ -44,44 +43,36 @@ var _ = Describe("PokemonController", func() {
 	})
 
 	BeforeEach(func() {
-		data := make(map[int]Pokemon)
+		data = make(map[int]Pokemon)
 		data[bulbasaur.DexNumber] = bulbasaur
 		data[ivysaur.DexNumber] = ivysaur
 
 		store := MockDataStore{data}
-
 		controller = PokemonController{store}
-		server = NewServer()
-	})
-
-	AfterEach(func() {
-		server.Close()
 	})
 
 	Context("Successful requests", func() {
 		It("should return a list of pokemon for the index", func() {
-			server.AppendHandlers(
-				controller.Index,
-			)
+			req, _ := http.NewRequest("GET", "localhost:1234/pokemon", nil)
+			res := httptest.NewRecorder()
 
-			res, err := http.Get(server.URL())
-			defer res.Body.Close()
-			Expect(err).To(BeNil())
-			Expect(res).NotTo(BeNil())
+			controller.Index(res, req)
 
 			payload, err := ioutil.ReadAll(res.Body)
 			Expect(err).To(BeNil())
 			Expect(payload).NotTo(BeNil())
 
-			fmt.Println(fmt.Sprintf("%v", payload))
-
 			var result []Pokemon
 			json.Unmarshal(payload, &result)
+			Expect(result).NotTo(BeNil())
 			Expect(len(result)).To(Equal(2))
+			for _, value := range result {
+				Expect(value).To(BeEquivalentTo(data[value.DexNumber]))
+			}
 		})
 
 		It("should return a pokemon", func() {
-			Fail("Not Implemented")
+			Fail("Not implemented")
 		})
 
 		It("should create a new pokemon", func() {
