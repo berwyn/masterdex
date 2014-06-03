@@ -5,6 +5,8 @@ import (
 	. "github.com/berwyn/masterdex/controller"
 
 	"encoding/json"
+	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -18,6 +20,7 @@ var (
 	bulbasaur  Pokemon
 	ivysaur    Pokemon
 	data       map[int]Pokemon
+	router     *mux.Router
 )
 
 type MockDataStore struct {
@@ -47,8 +50,11 @@ var _ = Describe("PokemonController", func() {
 		data[bulbasaur.DexNumber] = bulbasaur
 		data[ivysaur.DexNumber] = ivysaur
 
+		router = mux.NewRouter()
+		router.Host("localhost:1234")
 		store := MockDataStore{data}
 		controller = PokemonController{store}
+		controller.Register(router)
 	})
 
 	Context("Successful requests", func() {
@@ -71,8 +77,24 @@ var _ = Describe("PokemonController", func() {
 			}
 		})
 
-		It("should return a pokemon", func() {
-			Fail("Not implemented")
+		FIt("should return a pokemon", func() {
+			url, err := router.Get("Pokemon Get").URL("id", "001")
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			req, _ := http.NewRequest("GET", url.String(), nil)
+			res := httptest.NewRecorder()
+
+			controller.Get(res, req)
+
+			payload, err := ioutil.ReadAll(res.Body)
+			Expect(err).To(BeNil())
+			Expect(payload).NotTo(BeNil())
+
+			var result Pokemon
+			json.Unmarshal(payload, &result)
+			Expect(result).NotTo(BeNil())
+			Expect(result).To(BeEquivalentTo(bulbasaur))
 		})
 
 		It("should create a new pokemon", func() {
