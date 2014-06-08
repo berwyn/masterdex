@@ -1,0 +1,28 @@
+{
+  "name": "masterdex-node",
+  "version": "0.1.0",
+  "description": "Masterdex - the open source Pokedex",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/berwyn/masterdex"
+  },
+  "keywords": [
+    "pokemon",
+    "pokedex",
+    "api",
+    "rest"
+  ],
+  "author": "berwyn",
+  "license": "Apache v2",
+  "bugs": {
+    "url": "https://github.com/berwyn/masterdex/issues"
+  },
+  "homepage": "https://github.com/berwyn/masterdex",
+  "dependencies": {
+    "express": "^4.4.1"
+  }
+}
