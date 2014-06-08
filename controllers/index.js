@@ -10,9 +10,7 @@ module.exports = function(router) {
 			return (file.indexOf('.') !== 0) && (file !== 'index.js');
 		})
 		.forEach(function(file) {
-			var Controller = require(path.join(__dirname, file)),
-				controller = new Controller();
-			debugger;
+			var controller = require(path.join(__dirname, file));
 			if('register' in controller) {
 				controller.register(router);
 			}
