@@ -10,23 +10,23 @@ PokemonController.prototype.register = function register(router) {
 };
 
 PokemonController.prototype.index = function index(req, res) {
-
+	res.send('[GET] /pokemon');
 };
 
 PokemonController.prototype.create = function create(req, res) {
-
+	res.send('[POST] /pokemon');
 };
 
 PokemonController.prototype.get = function get(req, res) {
-
+	res.send('[GET] /pokemon/' + req.params.id);
 };
 
 PokemonController.prototype.update = function update(req, res) {
-
+	res.send('[' + req.method + '] /pokemon/' + req.params.id);
 };
 
 PokemonController.prototype.remove = function remove(req, res) {
-
+	res.send('[DELETE] /pokemon/' + req.params.id);
 };
 
 module.exports = PokemonController;
