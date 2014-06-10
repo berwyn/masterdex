@@ -37,7 +37,7 @@ describe('Pokemon Controller', function() {
 				method: 'POST',
 				url: '/pokemon',
 				headers: { Accept: 'application/json' }
-			})
+			});
 			var response = httpmock.createResponse();
 			controller.create(request, response);
 

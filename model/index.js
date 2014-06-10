@@ -27,4 +27,4 @@ module.exports = function connect(username, password) {
 		sequelize: sequelize,
 		Sequelize: Sequelize
 	}, db);
-}
+};
