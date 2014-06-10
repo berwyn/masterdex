@@ -10,7 +10,11 @@ PokemonController.prototype.register = function register(router) {
 };
 
 PokemonController.prototype.index = function index(req, res) {
-	res.send('[GET] /pokemon');
+	if(req.headers.Accept === 'application/json') {
+		res.send('[GET] /pokemon');
+	} else {
+		res.render('pokemon/index');
+	}
 };
 
 PokemonController.prototype.create = function create(req, res) {

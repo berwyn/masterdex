@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 		},
 		watch: {
 			jshint: {
-				files: ['**/*.js'],
+				files: ['**/*.js', '!**/node_modules/**'],
 				tasks: ['jshint'],
 				options: {
 					interrupt: true
