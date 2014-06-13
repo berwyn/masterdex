@@ -11,6 +11,7 @@ var express 	= require('express'),
 app.set('port', port);
 app.set('view engine', 'hbs');
 app.set('views', __dirname + '/views');
+
 app.use(less(__dirname + '/static'));
 app.use(express.static(__dirname + '/static'));
 app.use(function(req, res, next) {
@@ -23,14 +24,17 @@ hbs.registerHelper('eq', function(first, second, options) {
 	return (first === second)? options.fn(this) : options.inverse(this);
 });
 
+var partialDir = __dirname + '/views/partials';
 if(app.get('env') === 'development') {
-	hbsutils.registerWatchedPartials(__dirname + '/views/partials');
+	hbsutils.registerWatchedPartials(partialDir);
 } else {
-	hbs.registerPartials(__dirname + '/views/partials');
+	hbsutils.registerPartials(partialDir, {precompile: true});
 }
 
 var controllers = require('./controllers')(router);
+var db 			= require('./model');
 
 app.use('/', router);
-app.listen(port);
-console.log('Masterdex booting in [' + app.get('env') + '] on :' + port);
+app.listen(port, function() {
+	console.log('Masterdex booting in [' + app.get('env') + '] on :' + port);
+});

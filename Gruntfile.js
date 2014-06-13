@@ -5,7 +5,12 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		
 		jshint: {
-			all: ['**/*.js', '!**/node_modules/**', '!**/vendor/**'],
+			all: [
+				'**/*.js', 
+				'!**/node_modules/**', 
+				'!**/vendor/**', 
+				'!**/static/**'
+			],
 			options: {
 				node: true,
 			    curly: true,
@@ -17,8 +22,22 @@ module.exports = function(grunt) {
 		
 		watch: {
 			jshint: {
-				files: ['**/*.js', '!**/node_modules/**', '!**/vendor/**'],
+				files: [
+					'**/*.js', 
+					'!**/node_modules/**', 
+					'!**/vendor/**',
+					'!**/static/**'
+				],
 				tasks: ['jshint'],
+				options: {
+					interrupt: true
+				}
+			},
+			stylesheets: {
+				files: [
+					'assets/css/**.scss'
+				],
+				tasks: ['sass:dev'],
 				options: {
 					interrupt: true
 				}

@@ -32,6 +32,9 @@ node_modules
 # Compiled assets
 static
 
+# Config files
+config/config.json
+
 ## Windows
 
 # Windows image file caches

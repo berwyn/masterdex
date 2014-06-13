@@ -1,0 +1,16 @@
+@import 'colours';
+
+.navbar-masterdex {
+	background-color: $baseRed;
+	border-color: $brightRed;
+	border-radius: 0px;
+
+	.navbar-brand {
+		color: #fff;
+
+		&:hover,
+		&:focus {
+			color: $lightGrey;
+		}
+	}
+}
