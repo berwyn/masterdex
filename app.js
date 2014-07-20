@@ -19,7 +19,7 @@ app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/static'));
 app.use(bodyParser());
 app.use(function(req, res, next) {
-	req.locals.meta = { path: req.path };
+	res.locals.meta = { path: req.path };
 	next();
 });
 app.use(router);

@@ -4,11 +4,18 @@ var gulp 	= require('gulp'),
 	jshint 	= require('gulp-jshint'),
 	stylish = require('jshint-stylish'),
 	watch	= require('gulp-watch'),
+	_		= require('lodash-node'),
 	env 	= process.env.NODE_ENV || 'development';
 
 var paths = {
-	js: ['**/*.js', '!node_modules/**/*.js'],
-	css: 'assets/css/*.scss'
+	js: ['**/*.js', '!node_modules/**/*.js', '!bower_components/**/*.js', '!static/**/*.js'],
+	css: 'assets/css/*.scss',
+	components: {
+		'bootstrap/dist/css/bootstrap.css': './static/css',
+		'bootstrap/dist/js/bootstrap.js': './static/js',
+		'bootstrap/fonts/*': './static/fonts',
+		'jquery/dist/jquery.js': './static/js'
+	}
 };
 
 var cssFunc = function cssFunc(source) {
@@ -34,12 +41,26 @@ var jsFunc = function jsFunc(source) {
 		.pipe(jshint.reporter(stylish));
 };
 
-gulp.task('stylesheets', function() {
+gulp.task('stylesheets', function(cb) {
 	cssFunc(gulp.src(paths.css));
+	cb();
 });
 
-gulp.task('jshint', function() {
+gulp.task('jshint', function(cb) {
 	jsFunc(gulp.src(paths.js));
+	cb();
+});
+
+gulp.task('components', function(cb) {
+	_(paths.components).keys().each(function(key) {
+		gulp.src('./bower_components/' + key)
+			.pipe(gulp.dest(paths.components[key]));
+	});
+	cb();
+});
+
+gulp.task('compile', ['stylesheets', 'jshint', 'components'], function() {
+	//noop
 });
 
 gulp.task('watch', function() {
