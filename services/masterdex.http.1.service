@@ -1,7 +1,0 @@
-[Unit]
-Description=Masterdex web application
-After=docker.service
-
-[Service]
-ExecStart=/bin/bash -c '/usr/bin/docker start -a masterdex || /usr/bin/docker start --name masterdex'
-ExecStop=/usr/bin/docker stop -t 1 masterdex
