@@ -1,6 +1,3 @@
-var db 	= require('../model')(),
-	_	= require('lodash');
-
 function PokemonController(){}
 
 PokemonController.prototype.register = function register(router) {
@@ -17,10 +14,7 @@ PokemonController.prototype.index = function index(req, res) {
 };
 
 PokemonController.prototype.create = function create(req, res) {
-	db.Species.create(req.body).success(function(entity) {
-		console.log(entity);
-	});
-	// res.send('[POST] /pokemon');
+	res.send('[POST] /pokemon');
 };
 
 PokemonController.prototype.get = function get(req, res) {

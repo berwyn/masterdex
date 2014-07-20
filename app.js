@@ -53,7 +53,6 @@ if(app.get('env') === 'development') {
 }
 
 var controllers = require('./controllers')(router);
-var db 			= require('./model');
 
 app.use('/', router);
 app.listen(port, function() {
