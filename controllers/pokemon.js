@@ -15,12 +15,12 @@ var proto = {
 function PokemonController(){}
 
 PokemonController.prototype.register = function register(router) {
-	router.get('/pokemon', this.index);
-	router.post('/pokemon', this.create);
-	router.get('/pokemon/:id', this.get);
-	router.patch('/pokemon/:id', this.update);
-	router.put('/pokemon/:id', this.update);
-	router.delete('/pokemon/:id', this.remove);
+	router.get(		'/pokemon', 		this.index.bind(this));
+	router.post(	'/pokemon', 		this.create.bind(this));
+	router.get(		'/pokemon/:id', 	this.get.bind(this));
+	router.patch(	'/pokemon/:id', 	this.update.bind(this));
+	router.put(		'/pokemon/:id', 	this.update.bind(this));
+	router.delete(	'/pokemon/:id', 	this.remove.bind(this));
 };
 
 /**
@@ -64,7 +64,7 @@ PokemonController.prototype.render = function render(req, res, entity, template)
 			break;
 		default:
 			if(req.method === 'GET') {
-				res.render('pokemon/show', payload);
+				res.render(template, { entity: payload });
 			} else {
 				res.redirect('/pokemon/' + ('00' + entity.dexNumber).slice(-3));
 			}
@@ -98,7 +98,7 @@ PokemonController.prototype.get = function get(req, res) {
 		name: 'Bulbasaur',
 		dexNumber: 1,
 		description: 'The leaf pokemon'
-	});
+	}, 'pokemon/show');
 };
 
 PokemonController.prototype.update = function update(req, res) {

@@ -28,6 +28,15 @@ app.use(router);
 hbs.registerHelper('eq', function(first, second, options) {
 	return (first === second)? options.fn(this) : options.inverse(this);
 });
+hbs.registerHelper('list', function(context, options) {
+  var ret = "<ul>";
+
+  for(var i=0, j=context.length; i<j; i++) {
+    ret = ret + "<li>" + options.fn(context[i]) + "</li>";
+  }
+
+  return ret + "</ul>";
+});
 
 // Views
 var partialDir = __dirname + '/views/partials';
