@@ -1,9 +1,6 @@
 module.exports = function(sequelize, DataTypes) {
 	var Species = sequelize.define('Species', {
-		id: 					DataTypes.INTEGER,
-		createdAt: 		DataTypes.DATE,
-		updatedAt: 		DataTypes.DATE,
-		name: 				DataTypes.STRING,
+		name: 			DataTypes.STRING,
 		description: 	DataTypes.STRING,
 		dexNumber: 		DataTypes.INTEGER,
 		typeMask: 		DataTypes.INTEGER,
@@ -11,4 +8,5 @@ module.exports = function(sequelize, DataTypes) {
 	}, {
 
 	});
+	return Species;
 };

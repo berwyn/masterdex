@@ -2,10 +2,19 @@ var fs 			= require('fs'),
 	path 		= require('path'),
 	Sequelize 	= require('sequelize'),
 	_ 			= require('lodash'),
+	config		= require('../config/config')
 	db 			= {};
 
-module.exports = function connect(username, password) {
-	var sequelize = new Sequelize(username, password, masterdex);
+module.exports = function connect() {
+	'use strict';
+
+
+	var env 		= config[process.env.ENV_VARIABLE || 'development'],
+		sequelize 	= new Sequelize(env['database'], env['username'], env['password'], {
+			host: env['host'],
+			dialect: env['dialect']
+		});
+
 
 	fs
 		.readdirSync(__dirname)

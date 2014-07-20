@@ -1,49 +1,32 @@
 module.exports = {
 	up: function(migration, DataTypes, done) {
-		migration.addTable(
-			'species',
+		migration.createTable(
+			'Species',
 			{
-				id: {
-				type: DataTypes.INTEGER,
-				primaryKey: true,
-				autoIncrement: true
-				},
-				createdAt: {
-					type: DataTypes.DATE
-				},
-				updatedAt: {
-					type: DataTypes.DATE
-				},
 				name: {
+					type: DataTypes.STRING,
+					allowNull: false,
+					unique: true
+				},
+				description: {
 					type: DataTypes.STRING
 				},
-			description: {
-				type: DataTypes.STRING
-			},
-			dexNumber: {
-				type: DataTypes.INTEGER
-			},
-			typeMask: {
-				type: DataTypes.INTEGER
-			},
-			imageUrl: {
-				type: DataTypes.STRING
-			}
-		 }
-	);
-	migration.addIndex(
-		'species',
-		['dex_number'],
-		{
-			indexName: 'Species_DexNumber',
-			indiciesType: 'UNIQUE'
-		}
-	);
-		done();
+				dexNumber: {
+					type: DataTypes.INTEGER,
+					allowNull: false,
+					unique: true
+				},
+				typeMask: {
+					type: DataTypes.INTEGER
+				},
+				imageUrl: {
+					type: DataTypes.STRING
+				}
+	 		}
+		).complete(done);
 	},
+
 	down: function(migration, DataTypes, done) {
-		migration.removeIndex('species', 'Species_DexNumber');
-		migration.dropAllTables();
-		done();
+		migration.dropAllTables().complete(done);
 	}
 };

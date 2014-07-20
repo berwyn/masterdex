@@ -1,3 +1,6 @@
+var db 	= require('../model')(),
+	_	= require('lodash');
+
 function PokemonController(){}
 
 PokemonController.prototype.register = function register(router) {
@@ -10,19 +13,22 @@ PokemonController.prototype.register = function register(router) {
 };
 
 PokemonController.prototype.index = function index(req, res) {
-	if(req.headers.Accept === 'application/json') {
-		res.send('[GET] /pokemon');
-	} else {
-		res.render('pokemon/index');
-	}
+	res.send('[GET] /pokemon');
 };
 
 PokemonController.prototype.create = function create(req, res) {
-	res.send('[POST] /pokemon');
+	db.Species.create(req.body).success(function(entity) {
+		console.log(entity);
+	});
+	// res.send('[POST] /pokemon');
 };
 
 PokemonController.prototype.get = function get(req, res) {
-	res.send('[GET] /pokemon/' + req.params.id);
+	res.locals.entity = {
+		'name': 'Bulbasaur',
+		'dexNumber': 1
+	}
+	res.locals.template = 'pokemon/show';
 };
 
 PokemonController.prototype.update = function update(req, res) {
