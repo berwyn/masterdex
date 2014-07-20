@@ -1,0 +1,8 @@
+<h5>#<%= pokemon.dexNumber %> - <%= pokemon.name.en %></h5>
+<span>Other names:</span>
+<ul>
+<% Object.keys(pokemon.name).forEach(function(key) { %>
+	<% if(key === 'en') return %>
+	<li><%= key.toUpperCase() %>: <%= pokemon.name[key] %></li>
+<% }) %>
+</ul>

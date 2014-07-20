@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<% include ../partials/head %>
+	</head>
+	<body>
+		<% include ../partials/navigation %>
+		<div class="container-fluid">
+			<h1>Index <%= meta.path %></h1>
+			<ul>
+				<% collection.forEach(function(pokemon) { %>
+					<% include card %>
+				<% }) %>
+			</ul>
+		</div>
+	</body>
+</html>

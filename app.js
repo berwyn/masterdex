@@ -1,8 +1,7 @@
 'use strict';
 
 var express 	= require('express'),
-	hbs			= require('hbs'),
-	hbsutils	= require('hbs-utils')(hbs),
+	ejs			= require('ejs'),
 	Negotiator	= require('negotiator'),
 	bodyParser	= require('body-parser'),
 	controllers = require('./controllers'),
@@ -12,7 +11,7 @@ var express 	= require('express'),
 
 // Configure
 app.set('port', port);
-app.set('view engine', 'hbs');
+app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
 // Middleware
@@ -23,28 +22,6 @@ app.use(function(req, res, next) {
 	next();
 });
 app.use(router);
-
-// Handlebars helpers
-hbs.registerHelper('eq', function(first, second, options) {
-	return (first === second)? options.fn(this) : options.inverse(this);
-});
-hbs.registerHelper('list', function(context, options) {
-  var ret = "<ul>";
-
-  for(var i=0, j=context.length; i<j; i++) {
-    ret = ret + "<li>" + options.fn(context[i]) + "</li>";
-  }
-
-  return ret + "</ul>";
-});
-
-// Views
-var partialDir = __dirname + '/views/partials';
-if(app.get('env') === 'development') {
-	hbsutils.registerWatchedPartials(partialDir);
-} else {
-	hbsutils.registerPartials(partialDir, {precompile: true});
-}
 
 // Serve
 controllers(router);

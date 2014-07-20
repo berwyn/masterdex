@@ -13,20 +13,20 @@
 
     <div class="collapse navbar-collapse" id="navbar-collapse">
       <ul class="nav navbar-nav">
-        <li {{#eq meta.path "/"}}class="active"{{/eq}}>
-        	<a href="/">Home</a>
-    	</li>
-        <li {{#eq meta.path "/pokemon"}}class="active"{{/eq}}>
-        	<a href="/pokemon">Pokemon</a>
-    	</li>
-        <li {{#eq meta.path "/item"}}class="active"{{/eq}}>
-        	<a href="#">Items</a>
-    	</li>
+        <li <%= /\//.test(meta.path)? 'class="active"' : '' %>>
+          <a href="/">Home</a>
+        </li>
+        <li <%= /pokemon/.test(meta.path)? 'class="active"' : '' %>>
+          <a href="/pokemon">Pokemon</a>
+        </li>
+        <li <%= /item/.test(meta.path)? 'class="active"' : '' %>>
+          <a href="#">Items</a>
+        </li>
         <li {{#eq meta.path "/about"}}class="active"{{/eq}}>
-        	<a href="/about">About</a>
-    	</li>
+          <a href="/about">About</a>
+        </li>
       </ul>
     </div>
-    
+
   </div>
 </nav>

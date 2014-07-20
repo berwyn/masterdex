@@ -1,3 +1,4 @@
+//Varous NodeJS modules
 var _ 			= require('lodash-node'),
 	Negotiator 	= require('negotiator'),
 	mediaTypes 	= ['text/html', 'application/json'];
@@ -12,8 +13,51 @@ var proto = {
 	description: ''
 };
 
+/**
+ * Dummy data being used until data storage is sorted
+ * @type {Array}
+ */
+var dummy = [
+	{
+		name: {
+			en: 'Bulbasaur',
+			jp: 'フシギダネ',
+			fr: 'Bulbizarre',
+			de: 'Bisasam',
+			kr: '이상해씨'
+		},
+		dexNumber: 1,
+		description: 'The seed pokemon'
+	}, {
+		name: {
+			en: 'Ivysaur',
+			jp: 'フシギソウ',
+			fr: 'Herbizarre',
+			de: 'Bisaknosp',
+			kr: '이상해풀'
+		},
+		dexNumber: 2,
+		description: 'The seed pokemon'
+	}, {
+		name: {
+			en: 'Venusaur',
+			jp: 'フシギバナ',
+			fr: 'Florizarre',
+			de: 'Bisaflor',
+			kr: '이상해꽃',
+		},
+		dexNumber: 3,
+		description: 'The seed pokemon'
+	}
+];
+
 function PokemonController(){}
 
+/**
+ * Registers the controller with the provided Express router
+ * @param  {express.Router} 
+ *         router the router to register with
+ */
 PokemonController.prototype.register = function register(router) {
 	router.get(		'/pokemon', 		this.index.bind(this));
 	router.post(	'/pokemon', 		this.create.bind(this));
@@ -26,8 +70,10 @@ PokemonController.prototype.register = function register(router) {
 /**
  * Provides a convenience method to create an object with public properties
  * from any given object
- * @param  {Object} entity The entity who's properties we want to properties we want to take
- * @return {Object}        An object with publicly-allowable properties
+ * @param  {Object} entity 
+ *         The entity who's properties we want to properties we want to take
+ * @return {Object}        
+ *         An object with publicly-allowable properties
  */
 PokemonController.prototype.buildPayload = function buildPayload(entity) {
 	var payload = _(proto).clone();
@@ -39,23 +85,26 @@ PokemonController.prototype.buildPayload = function buildPayload(entity) {
 
 /**
  * Common rendering code
- * @param  {[type]} req      [description]
- * @param  {[type]} res      [description]
- * @param  {[type]} entity   The raw entity to provide to the template
- * @param  {[type]} template The template to render
- * @return {[type]}          [description]
+ * @param  {express.Request} req      
+ *         The incoming request
+ * @param  {express.Response} res      
+ *         The outbound response
+ * @param  {Object} entity   
+ *         The raw entity to provide to the template
+ * @param  {String} template 
+ *         The template to render
  */
 PokemonController.prototype.render = function render(req, res, entity, template) {
 	var payload,
 		responseType = new Negotiator(req).mediaType(mediaTypes);
 
 	if(_.isArray(entity)) {
-		payload = [];
+		payload = { collection: [] };
 		entity.forEach(function(el) {
-			payload.push(this.buildPayload(el));
+			payload.collection.push(this.buildPayload(el));
 		}.bind(this));
 	} else {
-		payload = this.buildPayload(entity);
+		payload = { pokemon: this.buildPayload(entity) };
 	}
 
 	switch(responseType) {
@@ -64,7 +113,7 @@ PokemonController.prototype.render = function render(req, res, entity, template)
 			break;
 		default:
 			if(req.method === 'GET') {
-				res.render(template, { entity: payload });
+				res.render(template, payload);
 			} else {
 				res.redirect('/pokemon/' + ('00' + entity.dexNumber).slice(-3));
 			}
@@ -73,20 +122,7 @@ PokemonController.prototype.render = function render(req, res, entity, template)
 };
 
 PokemonController.prototype.index = function index(req, res) {
-	var entities = [{
-			name: 'Bulbasaur',
-			dexNumber: 1,
-			description: 'The leaf pokemon'
-		}, {
-			name: 'Ivysaur',
-			dexNumber: 2,
-			description: 'The leaf pokemon'
-		}, {
-			name: 'Venusaur',
-			dexNumber: 3,
-			description: 'The leaf pokemon'
-		}];
-	this.render(req, res, entities, 'pokemon/index');
+	this.render(req, res, dummy, 'pokemon/index');
 };
 
 PokemonController.prototype.create = function create(req, res) {
@@ -94,11 +130,7 @@ PokemonController.prototype.create = function create(req, res) {
 };
 
 PokemonController.prototype.get = function get(req, res) {
-	this.render(req, res, {
-		name: 'Bulbasaur',
-		dexNumber: 1,
-		description: 'The leaf pokemon'
-	}, 'pokemon/show');
+	this.render(req, res, dummy[0], 'pokemon/show');
 };
 
 PokemonController.prototype.update = function update(req, res) {

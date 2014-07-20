@@ -6,11 +6,11 @@ AppController.prototype.register = function register(router) {
 };
 
 AppController.prototype.root = function root(req, res) {
-	res.render('index');
+	res.render('app/index');
 };
 
 AppController.prototype.about = function about(req, res) {
-	res.render('about');
+	res.render('app/about');
 };
 
 module.exports = AppController;
