@@ -6,10 +6,13 @@
 	<body>
 		<% include ../partials/navigation %>
 		<div class="container-fluid">
-			<h1>Index <%= meta.path %></h1>
-			<ul>
+			<ul class="list-unstyled">
 				<% collection.forEach(function(pokemon) { %>
-					<% include card %>
+					<li>
+						<section class="card">
+							<% include card %>
+						</section>
+					</li>
 				<% }) %>
 			</ul>
 		</div>

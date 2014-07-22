@@ -10,7 +10,11 @@ var _ 			= require('lodash-node'),
 var proto = {
 	name: '',
 	dexNumber: '',
-	description: ''
+	description: '',
+	height: '',
+	weight: '',
+	types: '',
+	img: ''
 };
 
 /**
@@ -27,7 +31,17 @@ var dummy = [
 			kr: '이상해씨'
 		},
 		dexNumber: 1,
-		description: 'The seed pokemon'
+		description: 'Seed Pokémon',
+		height: {
+			imperial: 28,
+			metric: 70
+		},
+		weight: {
+			imperial: 15.2,
+			metric: 6.9
+		},
+		types: ['grass', 'poison'],
+		img: 'http://localhost:8000/001.png'
 	}, {
 		name: {
 			en: 'Ivysaur',
@@ -37,7 +51,17 @@ var dummy = [
 			kr: '이상해풀'
 		},
 		dexNumber: 2,
-		description: 'The seed pokemon'
+		description: 'Seed Pokémon',
+		height: {
+			imperial: 39,
+			metric: 100
+		},
+		weight: {
+			imperial: 28.7,
+			metric: 13.0
+		},
+		types: ['grass', 'poison'],
+		img: 'http://localhost:8000/002.png'
 	}, {
 		name: {
 			en: 'Venusaur',
@@ -47,7 +71,17 @@ var dummy = [
 			kr: '이상해꽃',
 		},
 		dexNumber: 3,
-		description: 'The seed pokemon'
+		description: 'Seed Pokémon',
+		height: {
+			imperial: 79,
+			metric: 200
+		},
+		weight: {
+			imperial: 220.5,
+			metric: 100.0
+		},
+		types: ['grass', 'poison'],
+		img: 'http://localhost:8000/003.png'
 	}
 ];
 

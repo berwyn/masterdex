@@ -1,2 +1,79 @@
 @import 'colours';
 @import 'navbar';
+
+* {box-sizing: border-box;}
+
+.inline-block {
+	display: inline-block;
+}
+
+.block {
+	display: block;
+}
+
+.flex {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+}
+
+.flex-start {
+	align-items: flex-start;
+}
+
+.list-flat {
+	li {
+		display: inline-block;
+	}
+}
+
+@keyframes fly-in-from-left {
+  from {
+    transform:translateY(15rem) rotate(15deg);
+    opacity:0;
+  }
+}
+
+@keyframes fly-in-from-right {
+  from {
+    transform:translateY(15rem) rotate(-15deg);
+    opacity:0;
+  }
+}
+
+.card {
+	box-shadow:0 1px 2px #aaa;
+	background:white;
+	margin:0 1rem 1rem;
+	border-radius:3px;
+	user-select:none;
+	animation:fly-in-from-left .5s 1s ease both;
+	transform-origin:top left;
+	&:nth-child(even){
+		animation-name:fly-in-from-right;
+		animation-delay:1.1s;
+		transform-origin:top right;
+	}
+	> * {
+		display: inline;
+	}
+	.content {
+		padding:1.5rem;
+	}
+	img {
+		background-color: whitesmoke;
+	}
+}
+
+.type {
+	border-radius: 2px;
+	color: white;
+	padding: 4px;
+
+	&.grass {
+		background-color: $typeGrass;
+	}
+	&.poison {
+		background-color: $typePoison;
+	}
+}

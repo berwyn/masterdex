@@ -13,16 +13,16 @@
 
     <div class="collapse navbar-collapse" id="navbar-collapse">
       <ul class="nav navbar-nav">
-        <li <%= /\//.test(meta.path)? 'class="active"' : '' %>>
+        <li <%= ("/" === meta.path)? 'class=active' : '' %>>
           <a href="/">Home</a>
         </li>
-        <li <%= /pokemon/.test(meta.path)? 'class="active"' : '' %>>
+        <li <%= /pokemon/.test(meta.path)? 'class=active' : '' %>>
           <a href="/pokemon">Pokemon</a>
         </li>
-        <li <%= /item/.test(meta.path)? 'class="active"' : '' %>>
+        <li <%= /item/.test(meta.path)? 'class=active' : '' %>>
           <a href="#">Items</a>
         </li>
-        <li {{#eq meta.path "/about"}}class="active"{{/eq}}>
+        <li <%= /about/.test(meta.path)? 'class=active' : '' %>>
           <a href="/about">About</a>
         </li>
       </ul>
